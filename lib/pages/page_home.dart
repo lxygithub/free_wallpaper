@@ -37,5 +37,5 @@ class HomePageState extends State<HomePage> {
 
 _requestDataFlow(int startPage){
   Dio dio = new Dio();
-  dio.get(Api.HOME_DATA_FLOW)
+//  dio.get(Api.HOME_DATA_FLOW)
 }
