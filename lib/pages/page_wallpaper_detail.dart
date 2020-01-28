@@ -47,6 +47,7 @@ class WallpaperDetailPageState extends State<WallpaperDetailPage> {
       appBar: AppBar(title: Text("详情"), centerTitle: true,),
       body: Center(
         child: Swiper(
+          index: index,
           itemBuilder: (BuildContext context, int index) {
             return new Image.network(wallpapers[index].img1280800, fit: BoxFit.fitWidth,);
           },

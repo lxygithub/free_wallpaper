@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:free_wallpaper/pages/page_alarm.dart';
-import 'package:free_wallpaper/pages/page_email.dart';
+import 'package:free_wallpaper/pages/page_mobile.dart';
+import 'package:free_wallpaper/pages/page_categories.dart';
 import 'package:free_wallpaper/pages/page_home.dart';
 import 'package:free_wallpaper/pages/page_profile.dart';
 
@@ -26,7 +26,7 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> with Sin
   void initState() {
     // TODO: implement initState
     super.initState();
-    pages..add(HomePage())..add(EmailPage())..add(AlarmPage())..add(ProfilePage());
+    pages..add(HomePage())..add(CategoriesPage())..add(MobilePage())..add(ProfilePage());
   }
 
   @override
@@ -40,35 +40,37 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> with Sin
                 Icons.home,
                 color: _bottomNavigationColor,
               ),
+              title: Container(
+                child: Text(
+                  '首页',
+                  style: TextStyle(color: _bottomNavigationColor),
+                ),
+              )),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.computer,
+                color: _bottomNavigationColor,
+              ),
               title: Text(
-                'HOME',
+                'PC壁纸',
                 style: TextStyle(color: _bottomNavigationColor),
               )),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.email,
+                Icons.phone_android,
                 color: _bottomNavigationColor,
               ),
               title: Text(
-                'Email',
+                '手机壁纸',
                 style: TextStyle(color: _bottomNavigationColor),
               )),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.pages,
+                Icons.android,
                 color: _bottomNavigationColor,
               ),
               title: Text(
-                'PAGES',
-                style: TextStyle(color: _bottomNavigationColor),
-              )),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.airplay,
-                color: _bottomNavigationColor,
-              ),
-              title: Text(
-                'AIRPLAY',
+                '我',
                 style: TextStyle(color: _bottomNavigationColor),
               )),
         ],

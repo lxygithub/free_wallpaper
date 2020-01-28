@@ -4,7 +4,10 @@
   create_time:2020/1/26 22:08
 */
 
+import 'dart:collection';
+
 import 'package:dio/dio.dart';
+import 'package:free_wallpaper/constant.dart';
 import 'package:free_wallpaper/net/http_callback.dart';
 
 import 'address.dart';
@@ -61,27 +64,57 @@ class HttpManager {
 
   ///通用的GET请求
   get(api, params, HttpCallback callback) async {
-    if(callback!=null){
+    if (callback != null) {
       callback.onStart();
     }
     Response response;
     try {
       response = await _dio.get(api, queryParameters: params);
     } on DioError catch (e) {
-      if (callback!=null) {
+      if (callback != null) {
         callback.onError(resultError(e));
       }
       return resultError(e);
     }
 
     if (response.data is DioError) {
-      if (callback!=null) {
+      if (callback != null) {
         callback.onError(resultError(response.data['code']));
       }
       return resultError(response.data['code']);
     }
 
-    if (callback!=null) {
+    if (callback != null) {
+      callback.onSuccess(response.data);
+    }
+    return response.data;
+  }
+
+  ///通用的GET请求
+  getHtml(api, HttpCallback callback) async {
+    if (callback != null) {
+      callback.onStart();
+    }
+    Response response;
+    try {
+      Map<String, dynamic> headers = HashMap<String, dynamic>();
+      headers["User-Agent"] = Constant.UA;
+      response = await _dio.get(api, options: Options(headers: headers));
+    } on DioError catch (e) {
+      if (callback != null) {
+        callback.onError(resultError(e));
+      }
+      return resultError(e);
+    }
+
+    if (response.data is DioError) {
+      if (callback != null) {
+        callback.onError(resultError(response.data['code']));
+      }
+      return resultError(response.data['code']);
+    }
+
+    if (callback != null) {
       callback.onSuccess(response.data);
     }
     return response.data;
@@ -89,7 +122,7 @@ class HttpManager {
 
   ///通用的POST请求
   post(api, params, HttpCallback callback) async {
-    if(callback!=null){
+    if (callback != null) {
       callback.onStart();
     }
     Response response;
@@ -97,19 +130,48 @@ class HttpManager {
     try {
       response = await _dio.post(api, data: params);
     } on DioError catch (e) {
-      if (callback!=null) {
+      if (callback != null) {
         callback.onError(resultError(e));
       }
       return resultError(e);
     }
 
     if (response.data is DioError) {
-      if (callback!=null) {
+      if (callback != null) {
         callback.onError(resultError(response.data['code']));
       }
       return resultError(response.data['code']);
     }
-    if (callback!=null) {
+    if (callback != null) {
+      callback.onSuccess(response.data);
+    }
+    return response.data;
+  }
+
+  download(api, savePath, params, HttpCallback callback, ProgressCallback progressCallback) async {
+    if (callback != null) {
+      callback.onStart();
+    }
+    Response response;
+    Map<String, dynamic> headers = HashMap<String, dynamic>();
+    headers["User-Agent"] = Constant.UA;
+    try {
+      response = await _dio.download(api, savePath, onReceiveProgress: progressCallback, options: Options(headers: headers),
+          deleteOnError: true);
+    } on DioError catch (e) {
+      if (callback != null) {
+        callback.onError(resultError(e));
+      }
+      return resultError(e);
+    }
+
+    if (response.data is DioError) {
+      if (callback != null) {
+        callback.onError(resultError(response.data['code']));
+      }
+      return resultError(response.data['code']);
+    }
+    if (callback != null) {
       callback.onSuccess(response.data);
     }
     return response.data;
