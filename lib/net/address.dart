@@ -5,7 +5,7 @@
 */
 
 class Address {
-  static String BASE_URL = MEI_ZHUO;
+  static const String BASE_URL = MEI_ZHUO;
 
   static const String HOME_DATA_FLOW = "https://bird.ioliu.cn/v2";
 

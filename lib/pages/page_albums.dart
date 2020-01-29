@@ -4,7 +4,6 @@
   create_time:2020/1/28 11:35
 */
 
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -17,6 +16,7 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 
 // ignore: must_be_immutable
@@ -58,10 +58,10 @@ class AlbumsPageState extends State<AlbumsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _requestData(curPage);
+    _requestData(curPage,showLoading: true);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        _requestData(curPage);
+        _requestData(curPage,showLoading: true);
       }
     });
   }
@@ -85,7 +85,7 @@ class AlbumsPageState extends State<AlbumsPage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8,
-                childAspectRatio: mobile ? 3 / 14 : 4 / 3,
+                childAspectRatio: mobile ? 3 / 4 : 4 / 3,
                 controller: _scrollController,
                 // Generate 100 widgets that display their index in the List.
                 children: List.generate(albums.length, (index) {
@@ -96,14 +96,21 @@ class AlbumsPageState extends State<AlbumsPage> {
     );
   }
 
-  _requestData(int curPage) {
+  _requestData(int curPage, {showLoading = false}) {
     if (curPage > totalPage) {
       return;
     }
     var base64Url = category.href.contains("http") ? "" : Address.MEI_ZHUO;
     HttpManager.getInstance(baseUrl: base64Url).getHtml(category.href.replaceFirst(".html", "_$curPage.html"), HttpCallback(
-        onStart: () {},
+        onStart: () {
+          if (showLoading) {
+            LoadingDialog.showProgress(context);
+          }
+        },
         onSuccess: (ResultData data) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           if (curPage == 1) {
             albums.clear();
           }
@@ -137,6 +144,9 @@ class AlbumsPageState extends State<AlbumsPage> {
           });
         },
         onError: (ResultData error) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           ToastUtil.showToast(error.data);
         }
     ));

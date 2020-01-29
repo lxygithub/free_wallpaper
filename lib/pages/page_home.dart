@@ -10,6 +10,7 @@ import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/pages/page_albums.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 
 /*
@@ -30,7 +31,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _requestData();
+    _requestData(showLoading: true);
   }
 
 
@@ -85,55 +86,56 @@ class HomePageState extends State<HomePage> {
         ),
       );
     }
-    return GestureDetector(
-      onTap: () => _onItemClick(album),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 6,
-            child: Container(
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .height) / 2,
-              decoration: new BoxDecoration(
-                color: Colors.white,
-              ),
-              child: CachedNetworkImage(
-                imageUrl: album.cover,
-                placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                fit: BoxFit.fill,
-              ),
+    var column = Column(
+      children: <Widget>[
+        Expanded(
+          flex: 6,
+          child: Container(
+            width: (MediaQuery
+                .of(context)
+                .size
+                .height) / 2,
+            decoration: new BoxDecoration(
+              color: Colors.white,
+            ),
+            child: CachedNetworkImage(
+              imageUrl: album.cover,
+              placeholder: (context, url) => Container(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              fit: BoxFit.fill,
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Container( //分析 4
-              padding: EdgeInsets.only(left: 5, right: 5),
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .height) / 2,
-              decoration: new BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Center(
-                child: Text(
-                  album.name,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.black54,
-                  ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container( //分析 4
+            padding: EdgeInsets.only(left: 5, right: 5),
+            width: (MediaQuery
+                .of(context)
+                .size
+                .height) / 2,
+            decoration: new BoxDecoration(
+                color: Colors.lightBlueAccent,
+            ),
+            child: Center(
+              child: Text(
+                album.name,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.white,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+    return GestureDetector(
+        onTap: () => _onItemClick(album),
+        child: ClipRRect(borderRadius: BorderRadius.circular(5), child: column,)
     );
   }
 
@@ -142,10 +144,17 @@ class HomePageState extends State<HomePage> {
   }
 
 
-  _requestData() {
+  _requestData({showLoading = false}) {
     HttpManager.getInstance().getHtml("/mobile.html", HttpCallback(
-        onStart: () {},
+        onStart: () {
+          if (showLoading) {
+            LoadingDialog.showProgress(context);
+          }
+        },
         onSuccess: (ResultData data) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           albums.clear();
           var body = parse(data.data).body;
           var categories = body.getElementsByClassName("list_cont list_cont2 w1180");
@@ -173,6 +182,9 @@ class HomePageState extends State<HomePage> {
           });
         },
         onError: (ResultData error) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           ToastUtil.showToast(error.data);
         }
     ));

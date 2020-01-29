@@ -5,7 +5,7 @@
 */
 
 class ResultData {
-  String data;
+  dynamic data;
   bool isSuccess;
   int code;
   var headers;

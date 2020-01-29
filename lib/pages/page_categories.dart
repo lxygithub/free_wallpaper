@@ -6,6 +6,7 @@ import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart' show parse;
 
 import 'page_albums.dart';
@@ -27,7 +28,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _requestData();
+    _requestData(showLoading: true);
   }
 
   @override
@@ -53,11 +54,18 @@ class CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  _requestData() {
+  _requestData({showLoading = false}) {
     HttpManager.getInstance(baseUrl: Address.MEI_ZHUO)
         .getHtml("/zt/index.html", HttpCallback(
-        onStart: () {},
+        onStart: () {
+          if (showLoading) {
+            LoadingDialog.showProgress(context);
+          }
+        },
         onSuccess: (ResultData data) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           var doc = parse(data.data);
           var aTags = doc.body
               .getElementsByClassName("nr_zt w1180")
@@ -80,6 +88,9 @@ class CategoriesPageState extends State<CategoriesPage> {
           });
         },
         onError: (ResultData error) {
+          if (showLoading) {
+            LoadingDialog.dismiss(context);
+          }
           ToastUtil.showToast(error.data);
         }
     ));
@@ -97,10 +108,16 @@ class CategoriesPageState extends State<CategoriesPage> {
               placeholder: (context, url) => Container(child: CircularProgressIndicator()),
               errorWidget: (context, url, error) => Icon(Icons.error),
               fit: BoxFit.fill,
-              height: (MediaQuery.of(context).size.width) / 3,
+              height: (MediaQuery
+                  .of(context)
+                  .size
+                  .width) / 3,
             ),
             Container( //分析 4
-              width: (MediaQuery.of(context).size.width) / 3,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width) / 3,
               decoration: new BoxDecoration(
                 color: Colors.black45,
               ),
@@ -123,7 +140,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   _onItemClick(CategoryModel category) {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new AlbumsPage(category,false)),
+      new MaterialPageRoute(builder: (context) => new AlbumsPage(category, false)),
     );
   }
 

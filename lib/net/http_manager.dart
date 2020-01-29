@@ -148,34 +148,6 @@ class HttpManager {
     return response.data;
   }
 
-  download(api, savePath, params, HttpCallback callback, ProgressCallback progressCallback) async {
-    if (callback != null) {
-      callback.onStart();
-    }
-    Response response;
-    Map<String, dynamic> headers = HashMap<String, dynamic>();
-    headers["User-Agent"] = Constant.UA;
-    try {
-      response = await _dio.download(api, savePath, onReceiveProgress: progressCallback, options: Options(headers: headers),
-          deleteOnError: true);
-    } on DioError catch (e) {
-      if (callback != null) {
-        callback.onError(resultError(e));
-      }
-      return resultError(e);
-    }
-
-    if (response.data is DioError) {
-      if (callback != null) {
-        callback.onError(resultError(response.data['code']));
-      }
-      return resultError(response.data['code']);
-    }
-    if (callback != null) {
-      callback.onSuccess(response.data);
-    }
-    return response.data;
-  }
 }
 
 ResultData resultError(DioError e) {
