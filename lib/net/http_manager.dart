@@ -29,10 +29,10 @@ class HttpManager {
   ///通用全局单例，第一次使用时初始化
   HttpManager._internal({String baseUrl}) {
     if (null == _dio) {
-      _dio = new Dio(new BaseOptions(
+      _dio =  Dio( BaseOptions(
           baseUrl: Address.BASE_URL, connectTimeout: 15000));
-      _dio.interceptors.add(new LogsInterceptors());
-      _dio.interceptors.add(new ResponseInterceptors());
+      _dio.interceptors.add( LogsInterceptors());
+      _dio.interceptors.add( ResponseInterceptors());
     }
   }
 
@@ -97,9 +97,7 @@ class HttpManager {
     }
     Response response;
     try {
-      Map<String, dynamic> headers = HashMap<String, dynamic>();
-      headers["User-Agent"] = Constant.UA;
-      response = await _dio.get(api, options: Options(headers: headers));
+      response = await _dio.get(api, options: Options(headers: {"User-Agent": Constant.UA}));
     } on DioError catch (e) {
       if (callback != null) {
         callback.onError(resultError(e));
@@ -155,13 +153,13 @@ ResultData resultError(DioError e) {
   if (e.response != null) {
     errorResponse = e.response;
   } else {
-    errorResponse = new Response(statusCode: 666);
+    errorResponse =  Response(statusCode: 666);
   }
   if (e.type == DioErrorType.CONNECT_TIMEOUT ||
       e.type == DioErrorType.RECEIVE_TIMEOUT) {
     errorResponse.statusCode = Code.NETWORK_TIMEOUT;
   }
-  return new ResultData(
+  return  ResultData(
       errorResponse.statusMessage, false, errorResponse.statusCode);
 }
 

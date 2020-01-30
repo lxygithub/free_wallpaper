@@ -10,6 +10,8 @@ import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/pages/page_albums.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/error_placeholder.dart';
+import 'package:free_wallpaper/widget/home_drawer_widget.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 
@@ -38,7 +40,8 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: new RefreshIndicator(
+        drawer: HomeDrawer(),
+        body:  RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
@@ -64,7 +67,7 @@ class HomePageState extends State<HomePage> {
               .of(context)
               .size
               .height) / 2,
-          decoration: new BoxDecoration(
+          decoration:  BoxDecoration(
             color: Colors.white,
           ),
           child: Row(
@@ -95,13 +98,13 @@ class HomePageState extends State<HomePage> {
                 .of(context)
                 .size
                 .height) / 2,
-            decoration: new BoxDecoration(
+            decoration:  BoxDecoration(
               color: Colors.white,
             ),
             child: CachedNetworkImage(
               imageUrl: album.cover,
-              placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => ErrorPlaceHolder(),
               fit: BoxFit.fill,
             ),
           ),
@@ -114,7 +117,7 @@ class HomePageState extends State<HomePage> {
                 .of(context)
                 .size
                 .height) / 2,
-            decoration: new BoxDecoration(
+            decoration:  BoxDecoration(
                 color: Colors.lightBlueAccent,
             ),
             child: Center(
@@ -193,14 +196,14 @@ class HomePageState extends State<HomePage> {
   _onItemClick(AlbumModel album) {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new AlbumDetailPage(album, mobile: true,)),
+      MaterialPageRoute(builder: (context) => AlbumDetailPage(album, mobile: true,)),
     );
   }
 
   _onItemClickMore(AlbumModel album) {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new AlbumsPage(CategoryModel(name: album.name, href: album.href), true)),
+      MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: album.name, href: album.href), true)),
     );
   }
 

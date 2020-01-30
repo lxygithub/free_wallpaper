@@ -6,6 +6,7 @@ import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart' show parse;
 
@@ -34,7 +35,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new RefreshIndicator(
+      body:  RefreshIndicator(
           color: Colors.pinkAccent,
           backgroundColor: Colors.white,
           child: Container(
@@ -97,7 +98,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   }
 
   Widget _buildItem(BuildContext context, CategoryModel category) {
-    return new GestureDetector(
+    return  GestureDetector(
       onTap: () => _onItemClick(category),
       child: ClipOval(
         child: Stack(
@@ -105,8 +106,8 @@ class CategoriesPageState extends State<CategoriesPage> {
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: category.src,
-              placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => ErrorPlaceHolder(),
               fit: BoxFit.fill,
               height: (MediaQuery
                   .of(context)
@@ -118,7 +119,7 @@ class CategoriesPageState extends State<CategoriesPage> {
                   .of(context)
                   .size
                   .width) / 3,
-              decoration: new BoxDecoration(
+              decoration:  BoxDecoration(
                 color: Colors.black45,
               ),
               child: Text(
@@ -140,7 +141,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   _onItemClick(CategoryModel category) {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new AlbumsPage(category, false)),
+       MaterialPageRoute(builder: (context) =>  AlbumsPage(category, false)),
     );
   }
 

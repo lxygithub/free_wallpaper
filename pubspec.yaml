@@ -35,6 +35,9 @@ dependencies:
   permission_handler: ^4.2.0+hotfix.2
   downloads_path_provider: ^0.1.0
   wallpaper: ^0.0.8
+  quiver: ^2.0.5
+  package_info: ^0.4.0+13
+  url_launcher: ^5.4.1
 
 dev_dependencies:
   flutter_test:
@@ -54,9 +57,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
+  assets:
+    - icons/pic_loading_error.png
+    - icons/ic_launcher.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -16,6 +16,7 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 
@@ -58,10 +59,10 @@ class AlbumsPageState extends State<AlbumsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _requestData(curPage,showLoading: true);
+    _requestData(curPage, showLoading: true);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        _requestData(curPage,showLoading: true);
+        _requestData(curPage, showLoading: true);
       }
     });
   }
@@ -74,7 +75,7 @@ class AlbumsPageState extends State<AlbumsPage> {
           centerTitle: true,
           title: Text(category.name),
         ),
-        body: new RefreshIndicator(
+        body:  RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
@@ -100,8 +101,15 @@ class AlbumsPageState extends State<AlbumsPage> {
     if (curPage > totalPage) {
       return;
     }
-    var base64Url = category.href.contains("http") ? "" : Address.MEI_ZHUO;
-    HttpManager.getInstance(baseUrl: base64Url).getHtml(category.href.replaceFirst(".html", "_$curPage.html"), HttpCallback(
+    var baseUrl = category.href.contains("http") ? "" : Address.MEI_ZHUO;
+    var href = category.href;
+    var fullUrl;
+    if (href.endsWith("_1.html")) {
+      fullUrl = href.replaceFirst("_1.html", "_$curPage.html");
+    } else {
+      fullUrl = category.href.replaceFirst(".html", "_$curPage.html");
+    }
+    HttpManager.getInstance(baseUrl: baseUrl).getHtml(fullUrl, HttpCallback(
         onStart: () {
           if (showLoading) {
             LoadingDialog.showProgress(context);
@@ -158,16 +166,17 @@ class AlbumsPageState extends State<AlbumsPage> {
   }
 
   Widget _buildItem(BuildContext context, AlbumModel album) {
-    return new GestureDetector(
+    return  GestureDetector(
       onTap: () => _onItemClick(album),
-      child: Container(
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
         child: Stack(
           alignment: const Alignment(0, 1.0),
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: album.cover,
-              placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => ErrorPlaceHolder(),
               fit: BoxFit.fill,
               width: (MediaQuery
                   .of(context)
@@ -180,7 +189,7 @@ class AlbumsPageState extends State<AlbumsPage> {
                   .of(context)
                   .size
                   .width) / 2,
-              decoration: new BoxDecoration(
+              decoration:  BoxDecoration(
                 color: Colors.white,
               ),
               child: Text(
@@ -193,10 +202,6 @@ class AlbumsPageState extends State<AlbumsPage> {
               ),
             ),
           ],
-
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0)
         ),
       ),
     );
@@ -205,7 +210,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   _onItemClick(AlbumModel album) {
     Navigator.push(
         context,
-        new MaterialPageRoute(builder: (context) => new AlbumDetailPage(album, mobile: mobile,))
+         MaterialPageRoute(builder: (context) =>  AlbumDetailPage(album, mobile: mobile,))
     );
   }
 }

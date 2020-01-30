@@ -7,6 +7,7 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_albums.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 
@@ -34,7 +35,7 @@ class MobilePageState extends State<MobilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: new RefreshIndicator(
+        body:  RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
@@ -71,8 +72,8 @@ class MobilePageState extends State<MobilePage> {
                 .size
                 .width) / 2,
             imageUrl: category.src,
-            placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => ErrorPlaceHolder(),
             fit: BoxFit.fill,
           ),
           alignment: Alignment.topCenter,
@@ -82,7 +83,7 @@ class MobilePageState extends State<MobilePage> {
               .of(context)
               .size
               .height) / 2,
-          decoration: new BoxDecoration(
+          decoration:  BoxDecoration(
             color: Colors.black45,
           ),
           child: Text(
@@ -96,7 +97,7 @@ class MobilePageState extends State<MobilePage> {
         ),
       ],
     );
-    return new GestureDetector(
+    return  GestureDetector(
       onTap: () => _onItemClick(category),
       child: ClipRRect(borderRadius: BorderRadius.circular(5),child: stack,),
     );
@@ -109,7 +110,7 @@ class MobilePageState extends State<MobilePage> {
   _onItemClick(CategoryModel category) {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new AlbumsPage(category, true)),
+       MaterialPageRoute(builder: (context) =>  AlbumsPage(category, true)),
     );
   }
 
@@ -140,7 +141,6 @@ class MobilePageState extends State<MobilePage> {
                 .attributes["title"];
             categories.add(CategoryModel(name: name, href: href, src: src));
           });
-
           setState(() {
 
           });

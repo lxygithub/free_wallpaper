@@ -29,8 +29,8 @@ class DownloadManager {
   ///通用全局单例，第一次使用时初始化
   DownloadManager._internal({String baseUrl}) {
     if (null == _dio) {
-      _dio = new Dio(new BaseOptions(connectTimeout: 15000));
-      _dio.interceptors.add(new LogsInterceptors());
+      _dio =  Dio( BaseOptions(connectTimeout: 15000));
+      _dio.interceptors.add( LogsInterceptors());
     }
   }
 
@@ -50,11 +50,9 @@ class DownloadManager {
 
   download(api, savePath, ProgressCallback progressCallback) async {
     Response response;
-    Map<String, dynamic> headers = HashMap<String, dynamic>();
-    headers["User-Agent"] = Constant.UA;
     try {
       response = await _dio.download(api, savePath, onReceiveProgress: progressCallback,
-          options: Options(headers: headers,contentType: "image/jpeg"),
+          options: Options(headers: {"User-Agent":Constant.UA},contentType: "image/jpeg"),
           deleteOnError: true);
     } on DioError catch (e) {
       return e.error;

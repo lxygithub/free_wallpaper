@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:free_wallpaper/constant.dart';
 import 'package:free_wallpaper/listener/dialog_listener.dart';
 import 'package:free_wallpaper/model/album_model.dart';
 import 'package:free_wallpaper/net/download_manager.dart';
@@ -20,10 +21,14 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/utils/app_utlis.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
+import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
-import 'package:free_wallpaper/widget/linear_progress_dialog.dart';
+import 'package:free_wallpaper/widget/bottom_dialog.dart';
+import 'package:free_wallpaper/widget/error_placeholder.dart';
+import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wallpaper/wallpaper.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
@@ -48,7 +53,9 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   AlbumModel album;
   List<String> picUrls = List();
 
-  var mobile;
+  bool mobile;
+
+  BuildContext mContext;
 
   AlbumDetailPageState(AlbumModel album, bool mobile) {
     this.album = album;
@@ -79,23 +86,28 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
             icon: Icon(Icons.more_horiz, color: Colors.white,), onSelected: _itemSelected,),
         )
       ],),
-      body: Center(
-        child: Swiper(
-          itemBuilder: (BuildContext context, int index) {
-            return CachedNetworkImage(
-              imageUrl: picUrls[index],
-              placeholder: (context, url) => Container(width: 30, height: 30, child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-              fit: mobile ? BoxFit.fitHeight : BoxFit.fitWidth,
+      body: Builder(
+          builder: (BuildContext context) {
+            this.mContext = context;
+            return Center(
+              child: Swiper(
+                itemBuilder: (BuildContext context, int index) {
+                  return CachedNetworkImage(
+                    imageUrl: picUrls[index],
+                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => ErrorPlaceHolder(),
+                    fit: mobile ? BoxFit.cover : BoxFit.fitWidth,
+                  );
+                },
+                itemCount: picUrls.length,
+                control: SwiperControl(),
+                loop: false,
+                onIndexChanged: (int index) {
+                  curImageUrl = picUrls[index];
+                },
+              ),
             );
-          },
-          itemCount: picUrls.length,
-          control: new SwiperControl(),
-          loop: false,
-          onIndexChanged: (int index) {
-            curImageUrl = picUrls[index];
-          },
-        ),
+          }
       ),
     );
   }
@@ -134,31 +146,54 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
 
 
   void _download() async {
-    var linearProgressIndicator = LinearProgressDialog();
     var fileName = AppUtils.getFileNameFormUrl(curImageUrl);
-    var fillPath = "$downloadPath$fileName";
+    if (mobile) {
+      fileName = "mobile_$fileName";
+    }
+    var fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
     var file = File(fillPath);
     if (!file.existsSync()) {
       file.createSync();
     }
     PermissionStatus permissionStatus = await PermissionUtil.checkingPermission(PermissionGroup.storage);
     if (permissionStatus.value == PermissionStatus.granted.value) {
-      var data = await DownloadManager.getInstance().download(curImageUrl, fillPath, (int count, int total) {
-        print("count:$count");
-        linearProgressIndicator.showProgress(context, total.toDouble(),count.toDouble());
+      LoadingDialog.showProgress(context);
+      await DownloadManager.getInstance().download(curImageUrl, fillPath, (int count, int total) {
+
       });
-      print(data.toString());
+      LoadingDialog.dismiss(context);
+      SnackBarUtil.showSnake(mContext, "成功下载到：$fillPath");
     } else if (permissionStatus.value == PermissionStatus.denied.value) {
       await PermissionUtil.requestPermissions([PermissionGroup.storage]);
     } else {
-      await PermissionUtil.showRationale(context, "权限被拒绝且不再询问，请到设置页面手动打开",
+      await PermissionUtil.showRationale(context, "权限被拒绝且被设置为不再询问，请到设置页面手动打开",
           dialogListener: DialogListener(onCancel: () {
             PermissionUtil.openAppSetting();
           }));
     }
   }
 
-  void _settingWallpaper() {
+  void _settingWallpaper(int type) {
+    if (type == 0) {
+      Wallpaper.homeScreen(curImageUrl).then((value) {
+        SnackBarUtil.showSnake(mContext, "设置成功");
+      }, onError: (error) {
+        SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
+      });
+    } else if (type == 1) {
+      Wallpaper.lockScreen(curImageUrl).then((value) {
+        SnackBarUtil.showSnake(mContext, "设置成功");
+      }, onError: (error) {
+        LoadingDialog.dismiss(context);
+        SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
+      });
+    } else if (type == 2) {
+      Wallpaper.bothScreen(curImageUrl).then((value) {
+        SnackBarUtil.showSnake(mContext, "设置成功");
+      }, onError: (error) {
+        SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
+      });
+    }
   }
 
   _buildItems(BuildContext context) {
@@ -181,12 +216,15 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
     if (value == 0) {
       _download();
     } else {
-      _settingWallpaper();
+      BottomSheetDialog.showDialog(context,
+          function1: () => _settingWallpaper(0),
+          function2: () => _settingWallpaper(1),
+          function3: () => _settingWallpaper(2));
     }
   }
 
   _getDownloadPath() async {
-    return await DownloadsPathProvider.downloadsDirectory.then((value) {
+    DownloadsPathProvider.downloadsDirectory.then((value) {
       downloadPath = "${value.path}${Platform.pathSeparator}";
     });
   }

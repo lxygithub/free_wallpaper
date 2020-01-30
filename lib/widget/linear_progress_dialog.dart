@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
 
 ///进度
@@ -17,10 +18,12 @@ class LinearProgressDialog {
   _Progress _progress;
   _ProgressState _progressState;
 
+  String filePath;
+
   ///展示
-  void showProgress(BuildContext context, double maxProgress, double currentProgress) {
+  void showProgress(BuildContext context, double maxProgress) {
     this.maxProgress = maxProgress;
-    _progress = _Progress(maxProgress);
+    _progress = _Progress(maxProgress, filePath);
     _progressState = _progress.createState();
     if (!_isShowing) {
       _isShowing = true;
@@ -32,12 +35,10 @@ class LinearProgressDialog {
           ),
         );
       });
-    } else {
-      _updateProgress(currentProgress);
     }
   }
 
-  _updateProgress(double currentProgress) {
+  updateProgress(double currentProgress) {
     _progressState.updateProgress(currentProgress);
   }
 
@@ -46,20 +47,22 @@ class LinearProgressDialog {
 // ignore: must_be_immutable
 class _Progress extends StatefulWidget {
   double maxProgress;
+  String filePath;
 
-  _Progress(this.maxProgress);
+  _Progress(this.maxProgress, this.filePath);
 
   @override
-  State<StatefulWidget> createState() => _ProgressState(maxProgress);
+  State<StatefulWidget> createState() => _ProgressState(maxProgress, filePath);
 
 }
 
 class _ProgressState extends State<_Progress> {
   double _progressValue = 0;
   double _maxProgress;
+  String filePath;
 
 
-  _ProgressState(this._maxProgress);
+  _ProgressState(this._maxProgress, this.filePath);
 
   @override
   void initState() {
@@ -104,8 +107,7 @@ class _ProgressState extends State<_Progress> {
     }
     // we "finish" downloading here
     if (currentProgress >= _maxProgress) {
-      ToastUtil.showToast("下载成功");
-        Navigator.of(context).pop();
+      Navigator.of(context).pop();
     }
   }
 }
