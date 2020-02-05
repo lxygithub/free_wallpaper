@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -9,6 +10,7 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/pages/page_albums.dart';
+import 'package:free_wallpaper/pages/page_search.dart';
 import 'package:free_wallpaper/utils/toast.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/home_drawer_widget.dart';
@@ -40,8 +42,53 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          leading: Builder(
+            builder: (context) =>
+                IconButton(
+                  padding: EdgeInsets.only(left: 8),
+                  icon: Icon(Icons.menu, color: Colors.white,),
+                  onPressed: () {
+                    if (!Scaffold
+                        .of(context)
+                        .isDrawerOpen) {
+                      Scaffold.of(context).openDrawer();
+                    }
+                  },
+                ),
+          ),
+          title: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPage()));
+            },
+            child: Container(
+              height: 35,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                //设置四周边框
+                border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.search, color: Colors.black54,),
+                      Text(
+                        "点击搜索",
+                        style: TextStyle(color: Colors.black54, fontSize: 16, backgroundColor: Colors.white70),),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        ),
         drawer: HomeDrawer(),
-        body:  RefreshIndicator(
+        body: RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
@@ -67,7 +114,7 @@ class HomePageState extends State<HomePage> {
               .of(context)
               .size
               .height) / 2,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
           ),
           child: Row(
@@ -98,7 +145,7 @@ class HomePageState extends State<HomePage> {
                 .of(context)
                 .size
                 .height) / 2,
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
             ),
             child: CachedNetworkImage(
@@ -117,8 +164,8 @@ class HomePageState extends State<HomePage> {
                 .of(context)
                 .size
                 .height) / 2,
-            decoration:  BoxDecoration(
-                color: Colors.lightBlueAccent,
+            decoration: BoxDecoration(
+              color: Colors.lightBlueAccent,
             ),
             child: Center(
               child: Text(
@@ -206,6 +253,7 @@ class HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: album.name, href: album.href), true)),
     );
   }
+
 
 }
 

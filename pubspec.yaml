@@ -38,8 +38,11 @@ dependencies:
   quiver: ^2.0.5
   package_info: ^0.4.0+13
   url_launcher: ^5.4.1
+  json_annotation: ^3.0.0
 
 dev_dependencies:
+  json_serializable: ^3.2.5
+  build_runner: ^1.7.3
   flutter_test:
     sdk: flutter
 

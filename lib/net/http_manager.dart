@@ -29,10 +29,10 @@ class HttpManager {
   ///通用全局单例，第一次使用时初始化
   HttpManager._internal({String baseUrl}) {
     if (null == _dio) {
-      _dio =  Dio( BaseOptions(
+      _dio = Dio(BaseOptions(
           baseUrl: Address.BASE_URL, connectTimeout: 15000));
-      _dio.interceptors.add( LogsInterceptors());
-      _dio.interceptors.add( ResponseInterceptors());
+      _dio.interceptors.add(LogsInterceptors());
+      _dio.interceptors.add(ResponseInterceptors());
     }
   }
 
@@ -63,13 +63,13 @@ class HttpManager {
   }
 
   ///通用的GET请求
-  get(api, params, HttpCallback callback) async {
+  get(api, HttpCallback callback) async {
     if (callback != null) {
       callback.onStart();
     }
     Response response;
     try {
-      response = await _dio.get(api, queryParameters: params);
+      response = await _dio.get(api);
     } on DioError catch (e) {
       if (callback != null) {
         callback.onError(resultError(e));
@@ -91,13 +91,17 @@ class HttpManager {
   }
 
   ///通用的GET请求
-  getHtml(api, HttpCallback callback) async {
+  getHtml(api, HttpCallback callback, {bool defaultHeader = true}) async {
     if (callback != null) {
       callback.onStart();
     }
     Response response;
     try {
-      response = await _dio.get(api, options: Options(headers: {"User-Agent": Constant.UA}));
+      if (defaultHeader) {
+        response = await _dio.get(api, options: Options(headers: {"User-Agent": Constant.UA}));
+      } else {
+        response = await _dio.get(api);
+      }
     } on DioError catch (e) {
       if (callback != null) {
         callback.onError(resultError(e));
@@ -153,13 +157,13 @@ ResultData resultError(DioError e) {
   if (e.response != null) {
     errorResponse = e.response;
   } else {
-    errorResponse =  Response(statusCode: 666);
+    errorResponse = Response(statusCode: 666);
   }
   if (e.type == DioErrorType.CONNECT_TIMEOUT ||
       e.type == DioErrorType.RECEIVE_TIMEOUT) {
     errorResponse.statusCode = Code.NETWORK_TIMEOUT;
   }
-  return  ResultData(
+  return ResultData(
       errorResponse.statusMessage, false, errorResponse.statusCode);
 }
 

@@ -9,7 +9,8 @@ class CategoryModel{
   String name;
   String src;
   String href;
+  String color;
 
-  CategoryModel({this.name, this.src, this.href});
+  CategoryModel({this.name, this.src, this.href,this.color});
 
 }
