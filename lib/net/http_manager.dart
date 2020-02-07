@@ -4,8 +4,6 @@
   create_time:2020/1/26 22:08
 */
 
-import 'dart:collection';
-
 import 'package:dio/dio.dart';
 import 'package:free_wallpaper/constant.dart';
 import 'package:free_wallpaper/net/http_callback.dart';

@@ -72,12 +72,10 @@ class SearchPageState extends State<SearchPage> {
               textAlignVertical: TextAlignVertical.center,
               textInputAction: TextInputAction.search,
               cursorColor: Colors.lightBlueAccent,
-              style: TextStyle(color: Colors.black54, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 16),
               decoration: InputDecoration(
                 hintText: "你想搜索什么？",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide()),
+                hintStyle: TextStyle(color: Colors.white),
                 fillColor: Colors.white70,
               ),
               onSubmitted: (text) {

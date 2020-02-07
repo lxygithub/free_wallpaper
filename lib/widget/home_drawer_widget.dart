@@ -71,7 +71,11 @@ class HomeDrawerState extends State<HomeDrawer> {
         return Container(
           child: Column(
             children: <Widget>[
-              Container(margin: EdgeInsets.only(right: 20), child: Text(_listItems[index].name), alignment: Alignment.topLeft,),
+              Container(
+                child: Text("筛选"),
+              ),
+              Container(
+                margin: EdgeInsets.only(right: 20), child: Text(_listItems[index].name), alignment: Alignment.topLeft,),
               StaggeredGridView.countBuilder(
                 crossAxisCount: 5,
                 itemCount: _deviceStyles.length,
@@ -136,19 +140,38 @@ class HomeDrawerState extends State<HomeDrawer> {
   }
 
   _buildDeviceStyleItem(CategoryModel category) {
-    return Container(child: Text(category.name),alignment:Alignment.centerLeft,);
+    return GestureDetector(
+      onTap: (){
+        category.checked = true;
+        setState(() {
+
+        });
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 3, right: 3),
+        child: Text(category.name, style: TextStyle(
+            color: category.checked ? Colors.white : Colors.pinkAccent),),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.pinkAccent, width: 1),
+            borderRadius: BorderRadius.all(Radius.circular(3)),
+            color: category.checked ? Colors.pinkAccent : Colors.white
+
+        ),),
+    );
   }
 
   _buildStyleItem(CategoryModel category) {
-    return Container(child: Text(category.name),alignment:Alignment.centerLeft,);
+    return _buildDeviceStyleItem(category);
   }
 
   _buildSizeStyleItem(CategoryModel category) {
-    return Container(child: Text(category.name),alignment:Alignment.centerLeft,);
+    return _buildDeviceStyleItem(category);
   }
 
   _buildColorStyleItem(CategoryModel category) {
-    return Container(child: Text(category.name),alignment:Alignment.centerLeft,);
+    return _buildDeviceStyleItem(category);
   }
 
   _getMobileCategoryData() {

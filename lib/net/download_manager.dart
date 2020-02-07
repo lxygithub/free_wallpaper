@@ -4,17 +4,11 @@
   create_time:2020/1/26 22:08
 */
 
-import 'dart:collection';
-
 import 'package:dio/dio.dart';
 import 'package:free_wallpaper/constant.dart';
-import 'package:free_wallpaper/net/http_callback.dart';
 
 import 'address.dart';
-import 'code.dart';
 import 'logs_interceptor.dart';
-import 'response_interceptor.dart';
-import 'result_data.dart';
 
 class DownloadManager {
   static DownloadManager _instance = DownloadManager._internal();

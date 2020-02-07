@@ -34,6 +34,10 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> with Sin
     return Scaffold(
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 16,
+        fixedColor: Colors.lightBlueAccent,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
         items: [
           BottomNavigationBarItem(
               icon: Icon(

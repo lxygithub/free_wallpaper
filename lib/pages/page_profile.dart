@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:free_wallpaper/pages/page_about.dart';
 import 'package:free_wallpaper/pages/page_downloads.dart';
-import 'package:free_wallpaper/pages/page_feedbak.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 

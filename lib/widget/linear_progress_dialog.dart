@@ -8,8 +8,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:free_wallpaper/utils/snack_bar.dart';
-import 'package:free_wallpaper/utils/toast.dart';
 
 ///进度
 class LinearProgressDialog {
