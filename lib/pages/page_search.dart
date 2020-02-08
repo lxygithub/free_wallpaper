@@ -155,8 +155,8 @@ class SearchPageState extends State<SearchPage> {
               if (showLoading) {
                 LoadingDialog.dismiss(context);
               }
-              if (startPage == 0) {
-                this.startPage = 0;
+              if (startPage == 1) {
+                this.startPage = 1;
                 baiduImages.clear();
               }
 
@@ -224,7 +224,7 @@ class SearchPageState extends State<SearchPage> {
 //  }
 
   Future<void> _refreshData() async {
-    startPage = 0;
+    startPage = 1;
     _requestJsonData(startPage);
   }
 
@@ -263,7 +263,7 @@ class SearchPageState extends State<SearchPage> {
     return GestureDetector(
       onTap: () {
         this.keyword = keyword;
-        startPage = 0;
+        startPage = 1;
         _requestJsonData(startPage);
       },
       child: Container(

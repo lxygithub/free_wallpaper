@@ -14,6 +14,7 @@ class SnackBarUtil {
       backgroundColor: Colors.lightBlueAccent,
       action: SnackBarAction(
         label: label,
+        textColor: Colors.white,
         onPressed: action != null ? action : () {
           // Some code to undo the change.
           Scaffold.of(context).hideCurrentSnackBar();
