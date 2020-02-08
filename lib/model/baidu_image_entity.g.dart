@@ -41,15 +41,12 @@ Data _$DataFromJson(Map<String, dynamic> json) {
     json['height'] as int,
     json['type'] as String,
     json['is_gif'] as int,
-    (json['replaceUrl'] as List)
-        ?.map((e) =>
-            e == null ? null : ReplaceUrl.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
     json['bdImgnewsDate'] as String,
     json['fromPageTitleEnc'] as String,
     json['cs'] as String,
     json['os'] as String,
     json['simid'] as String,
+    json['di'] as String,
   );
 }
 
@@ -65,27 +62,10 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
       'height': instance.height,
       'type': instance.type,
       'is_gif': instance.isGif,
-      'replaceUrl': instance.replaceUrl,
       'bdImgnewsDate': instance.bdImgnewsDate,
       'fromPageTitleEnc': instance.fromPageTitleEnc,
       'cs': instance.cs,
       'os': instance.os,
       'simid': instance.simid,
-    };
-
-ReplaceUrl _$ReplaceUrlFromJson(Map<String, dynamic> json) {
-  return ReplaceUrl(
-    json['ObjURL'] as String,
-    json['ObjUrl'] as String,
-    json['FromURL'] as String,
-    json['FromUrl'] as String,
-  );
-}
-
-Map<String, dynamic> _$ReplaceUrlToJson(ReplaceUrl instance) =>
-    <String, dynamic>{
-      'ObjURL': instance.objURL,
-      'ObjUrl': instance.objUrl,
-      'FromURL': instance.fromURL,
-      'FromUrl': instance.fromUrl,
+      'di': instance.di,
     };

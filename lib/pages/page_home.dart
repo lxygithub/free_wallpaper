@@ -41,68 +41,55 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: Builder(
-            builder: (context) =>
-                IconButton(
-                  padding: EdgeInsets.only(left: 8),
-                  icon: Icon(Icons.menu, color: Colors.white,),
-                  onPressed: () {
-                    if (!Scaffold
-                        .of(context)
-                        .isDrawerOpen) {
-                      Scaffold.of(context).openDrawer();
-                    }
-                  },
-                ),
-          ),
+      appBar: AppBar(
+          leading: _buildLeading(),
           title: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPage()));
-            },
-            child: Container(
-              height: 35,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                //设置四周边框
-                border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.search, color: Colors.black54,),
-                      Text(
-                        "点击搜索",
-                        style: TextStyle(color: Colors.black54, fontSize: 16, backgroundColor: Colors.white70),),
-                    ],
-                  ),
-                ),
-              ),
+          onTap: () {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchPage()));
+    },
+      child: Container(
+        height: 35,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          //设置四周圆角 角度
+          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          //设置四周边框
+          border: new Border.all(width: 1, color: Colors.red),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.search, color: Colors.black54,),
+                Text(
+                  "点击搜索",
+                  style: TextStyle(color: Colors.black54, fontSize: 16, backgroundColor: Colors.white70),),
+              ],
             ),
           ),
-
         ),
-        drawer: HomeDrawer(),
-        body: RefreshIndicator(
-            color: Colors.pinkAccent,
-            backgroundColor: Colors.white,
-            child: Container(
-                margin: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 8,
-                  itemCount: albums.length,
-                  itemBuilder: (BuildContext context, int index) => _buildItem(context, albums[index]),
-                  staggeredTileBuilder: (int index) => StaggeredTile.count(albums[index].cover == null ? 8 : 4, albums[index].cover == null ? 1 : 6),
-                  mainAxisSpacing: 4.0,
-                  crossAxisSpacing: 4.0,
-                )
-            ), onRefresh: _refreshData)
+      ),
+    ),
+
+    ),
+    drawer: HomeDrawer(),
+    body: RefreshIndicator(
+    color: Colors.pinkAccent,
+    backgroundColor: Colors.white,
+    child: Container(
+    margin: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
+    child: StaggeredGridView.countBuilder(
+    crossAxisCount: 8,
+    itemCount: albums.length,
+    itemBuilder: (BuildContext context, int index) => _buildItem(context, albums[index]),
+    staggeredTileBuilder: (int index) => StaggeredTile.count(albums[index].cover == null ? 8 : 4, albums[index].cover == null ? 1 : 6),
+    mainAxisSpacing: 4.0,
+    crossAxisSpacing: 4.0,
+    )
+    ), onRefresh: _refreshData)
     );
-  }
+    }
 
   Widget _buildItem(BuildContext context, AlbumModel album) {
     if (album.cover == null) {
@@ -250,6 +237,23 @@ class HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: album.name, href: album.href), true)),
+    );
+  }
+
+  _buildLeading() {
+    return Builder(
+      builder: (context) =>
+          IconButton(
+            padding: EdgeInsets.only(left: 8),
+            icon: Icon(Icons.menu, color: Colors.white,),
+            onPressed: () {
+              if (!Scaffold
+                  .of(context)
+                  .isDrawerOpen) {
+                Scaffold.of(context).openDrawer();
+              }
+            },
+          ),
     );
   }
 

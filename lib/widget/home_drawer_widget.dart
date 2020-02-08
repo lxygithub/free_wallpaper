@@ -12,6 +12,7 @@ import 'package:free_wallpaper/model/category_model.dart';
 import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
+import 'package:free_wallpaper/pages/page_albums.dart';
 import 'package:free_wallpaper/utils/toast.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
@@ -33,14 +34,20 @@ class HomeDrawerState extends State<HomeDrawer> {
   List<CategoryModel> _styles = List();
   List<CategoryModel> _sizeStyles = List();
   List<CategoryModel> _colorStyles = List();
+  String _device = "mobile";
+  String _style = "0";
+  String _size = "0";
+  String _color = "0";
+  String curHref = Constant.HOST+"mobile_0_0_0_1.html";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _listItems..add(CategoryModel(name: "设备类型"))..add(CategoryModel(name: "壁纸分类"))..add(CategoryModel(name: "壁纸尺寸"))..add(CategoryModel(name: "壁纸颜色"));
+    _listItems..add(CategoryModel(name: "设备类型"))..add(CategoryModel(name: "壁纸分类"))..add(CategoryModel(name: "壁纸尺寸") /*
+      ..add(CategoryModel(name: "壁纸颜色")*/);
 
-    _deviceStyles..add(CategoryModel(name: "手机", href: Constant.STYLE_MOBILE_URL))..add(CategoryModel(name: "桌面", href: Constant.STYLE_PC_URL));
+    _deviceStyles..add(CategoryModel(name: "手机", href: Constant.STYLE_MOBILE_URL, type: "mobile", checked: true))..add(CategoryModel(name: "桌面", href: Constant.STYLE_PC_URL, type: "wallpaper"));
     _getMobileCategoryData();
   }
 
@@ -94,7 +101,7 @@ class HomeDrawerState extends State<HomeDrawer> {
             children: <Widget>[
               Container(margin: EdgeInsets.only(right: 20), child: Text(_listItems[index].name), alignment: Alignment.topLeft,),
               StaggeredGridView.countBuilder(
-                crossAxisCount: 5,
+                crossAxisCount: _device == "mobile" ? 5 : 4,
                 itemCount: _styles.length,
                 itemBuilder: (BuildContext context, int index) => _buildStyleItem(_styles[index]),
                 staggeredTileBuilder: (int index) => StaggeredTile.count(1, 0.6),
@@ -117,6 +124,17 @@ class HomeDrawerState extends State<HomeDrawer> {
                 physics: new NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
               ),
+              Row(children: <Widget>[
+                Expanded(flex: 1, child: MaterialButton(color: Colors.lightBlueAccent, child: Text("取消", style: TextStyle(color: Colors.white),), onPressed: () {
+                  Navigator.pop(context);
+                },)),
+                Expanded(flex: 1, child: MaterialButton(color: Colors.pinkAccent, child: Text("确定", style: TextStyle(color: Colors.white),), onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: "筛选结果", href: curHref), true)),
+                  );
+                },)),
+              ],)
             ],
           ),
         );
@@ -141,12 +159,29 @@ class HomeDrawerState extends State<HomeDrawer> {
 
   _buildDeviceStyleItem(CategoryModel category) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         category.checked = true;
-        setState(() {
-
-        });
-        Navigator.of(context).pop();
+        switch (category.tagType) {
+          case 0:
+            _device = category.type;
+            if (category.name=="手机") {
+              _getMobileCategoryData();
+            }else{
+              _getPCCategoryData();
+            }
+            break;
+          case 1:
+            _style = category.type;
+            break;
+          case 2:
+            _size = category.type;
+            break;
+          case 3:
+            _color = category.type;
+            break;
+        }
+        curHref = Constant.HOST + "${_device}_${_style}_${_color}_${_size}_1.html";
+        _refreshFilterStatus(category);
       },
       child: Container(
         margin: EdgeInsets.only(top: 3, right: 3),
@@ -193,7 +228,8 @@ class HomeDrawerState extends State<HomeDrawer> {
         for (var tag in styleTags) {
           var name = tag.text;
           var href = tag.attributes["href"];
-          _styles.add(CategoryModel(name: name, href: href));
+          var type = href.split("_")[1];
+          _styles.add(CategoryModel(name: name, href: href, tagType: 1, type: type));
         }
 
         var sizeTags = cont1Tags.last
@@ -201,7 +237,8 @@ class HomeDrawerState extends State<HomeDrawer> {
         for (var tag in sizeTags) {
           var name = tag.text;
           var href = tag.attributes["href"];
-          _sizeStyles.add(CategoryModel(name: name, href: href));
+          var sizeType = href.split("_")[3];
+          _sizeStyles.add(CategoryModel(name: name, href: href, tagType: 3, type: sizeType));
         }
 
         var colorTags = body
@@ -213,9 +250,13 @@ class HomeDrawerState extends State<HomeDrawer> {
           var name = tag.attributes["title"];
           var href = tag.attributes["href"];
           var color = tag.attributes["class"];
-          _colorStyles.add(CategoryModel(name: name, href: href, color: color));
+          var colorType = href.split("_")[2];
+          _colorStyles.add(CategoryModel(name: name,
+              href: href,
+              color: color,
+              tagType: 2,
+              type: colorType));
         }
-        print("");
         setState(() {
 
         });
@@ -226,6 +267,7 @@ class HomeDrawerState extends State<HomeDrawer> {
       },
     ));
   }
+
 
   _getPCCategoryData() {
     HttpManager.getInstance(baseUrl: "").getHtml(Constant.STYLE_PC_URL, HttpCallback(
@@ -244,15 +286,17 @@ class HomeDrawerState extends State<HomeDrawer> {
         for (var tag in styleTags) {
           var name = tag.text;
           var href = tag.attributes["href"];
-          _styles.add(CategoryModel(name: name, href: href));
+          var type = href.split("_")[1];
+          _styles.add(CategoryModel(name: name, href: href, tagType: 1, type: type));
         }
         var sizeTags = body
-            .querySelector("cont1")
+            .querySelector(".cont1")
             .getElementsByTagName("a");
         for (var tag in sizeTags) {
           var name = tag.text;
           var href = tag.attributes["href"];
-          _sizeStyles.add(CategoryModel(name: name, href: href));
+          var sizeType = href.split("_")[3];
+          _sizeStyles.add(CategoryModel(name: name, href: href, tagType: 3, type: sizeType));
         }
         var colorTags = body
             .getElementsByClassName("cont_cl clearfix")
@@ -263,7 +307,12 @@ class HomeDrawerState extends State<HomeDrawer> {
           var name = tag.attributes["title"];
           var href = tag.attributes["href"];
           var color = tag.attributes["class"];
-          _colorStyles.add(CategoryModel(name: name, href: href, color: color));
+          var colorType = href.split("_")[2];
+          _colorStyles.add(CategoryModel(name: name,
+              href: href,
+              color: color,
+              tagType: 2,
+              type: colorType));
         }
         setState(() {
 
@@ -274,5 +323,33 @@ class HomeDrawerState extends State<HomeDrawer> {
         ToastUtil.showToast(error.data);
       },
     ));
+  }
+
+  void _refreshFilterStatus(CategoryModel checkedCategory) {
+    switch (checkedCategory.tagType) {
+      case 0:
+        _deviceStyles.forEach((f) {
+          f.checked = f.name == checkedCategory.name;
+        });
+        break;
+      case 1:
+        _styles.forEach((f) {
+          f.checked = f.name == checkedCategory.name;
+        });
+        break;
+      case 2:
+        _colorStyles.forEach((f) {
+          f.checked = f.name == checkedCategory.name;
+        });
+        break;
+      case 3:
+        _sizeStyles.forEach((f) {
+          f.checked = f.name == checkedCategory.name;
+        });
+        break;
+    }
+    setState(() {
+
+    });
   }
 }

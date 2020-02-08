@@ -10,8 +10,13 @@ class CategoryModel {
   String src;
   String href;
   String color;
-  bool checked = false;
+  bool checked;
 
-  CategoryModel({this.name, this.src, this.href, this.color});
+  String type;
+
+  ///0：设备 1：风格 2：尺寸 3：颜色
+  int tagType;
+
+  CategoryModel({this.name, this.src, this.href, this.color, this.tagType=0, this.type,this.checked=false});
 
 }

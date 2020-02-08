@@ -61,13 +61,19 @@ class SplashPageState extends State<SplashPage> {
           top: 50,
           right: 30,
           child: ClipOval(
-            child: Container(
-              width: 50,
-              height: 50,
-              color: Colors.lightBlueAccent,
-              child: Center(child: Text("$_count",
-                style: TextStyle(color: Colors.white, fontSize: 18, decoration: TextDecoration.none),
-                textAlign: TextAlign.center,)),
+            child: GestureDetector(
+              onTap: (){
+                _timer.cancel();
+                Navigator.of(context).pushReplacementNamed('router/bottom_navigation');
+              },
+              child: Container(
+                width: 50,
+                height: 50,
+                color: Colors.lightBlueAccent,
+                child: Center(child: Text("$_count",
+                  style: TextStyle(color: Colors.white, fontSize: 18, decoration: TextDecoration.none),
+                  textAlign: TextAlign.center,)),
+              ),
             ),
           ),
         )

@@ -1,10 +1,10 @@
-import 'package:json_annotation/json_annotation.dart'; 
-  
+import 'package:json_annotation/json_annotation.dart';
+
 part 'baidu_image_entity.g.dart';
 
 
 @JsonSerializable()
-  class BaiduImageEntity extends Object {
+class BaiduImageEntity extends Object {
 
   @JsonKey(name: 'queryEnc')
   String queryEnc;
@@ -21,7 +21,7 @@ part 'baidu_image_entity.g.dart';
   @JsonKey(name: 'data')
   List<Data> data;
 
-  BaiduImageEntity(this.queryEnc,this.queryExt,this.listNum,this.displayNum,this.data,);
+  BaiduImageEntity(this.queryEnc, this.queryExt, this.listNum, this.displayNum, this.data,);
 
   factory BaiduImageEntity.fromJson(Map<String, dynamic> srcJson) => _$BaiduImageEntityFromJson(srcJson);
 
@@ -29,9 +29,9 @@ part 'baidu_image_entity.g.dart';
 
 }
 
-  
+
 @JsonSerializable()
-  class Data extends Object {
+class Data extends Object {
 
   @JsonKey(name: 'thumbURL')
   String thumbURL;
@@ -66,9 +66,6 @@ part 'baidu_image_entity.g.dart';
   @JsonKey(name: 'is_gif')
   int isGif;
 
-  @JsonKey(name: 'replaceUrl')
-  List<ReplaceUrl> replaceUrl;
-
   @JsonKey(name: 'bdImgnewsDate')
   String bdImgnewsDate;
 
@@ -83,8 +80,11 @@ part 'baidu_image_entity.g.dart';
 
   @JsonKey(name: 'simid')
   String simid;
+  @JsonKey(name: 'di')
+  String di;
 
-  Data(this.thumbURL,this.middleURL,this.largeTnImageUrl,this.hasLarge,this.hoverURL,this.pageNum,this.fromURLHost,this.width,this.height,this.type,this.isGif,this.replaceUrl,this.bdImgnewsDate,this.fromPageTitleEnc,this.cs,this.os,this.simid,);
+  Data(this.thumbURL, this.middleURL, this.largeTnImageUrl, this.hasLarge, this.hoverURL, this.pageNum, this.fromURLHost, this.width, this.height, this.type, this.isGif,
+      this.bdImgnewsDate, this.fromPageTitleEnc, this.cs, this.os, this.simid, this.di);
 
   factory Data.fromJson(Map<String, dynamic> srcJson) => _$DataFromJson(srcJson);
 
@@ -92,28 +92,3 @@ part 'baidu_image_entity.g.dart';
 
 }
 
-  
-@JsonSerializable()
-  class ReplaceUrl extends Object {
-
-  @JsonKey(name: 'ObjURL')
-  String objURL;
-
-  @JsonKey(name: 'ObjUrl')
-  String objUrl;
-
-  @JsonKey(name: 'FromURL')
-  String fromURL;
-
-  @JsonKey(name: 'FromUrl')
-  String fromUrl;
-
-  ReplaceUrl(this.objURL,this.objUrl,this.fromURL,this.fromUrl,);
-
-  factory ReplaceUrl.fromJson(Map<String, dynamic> srcJson) => _$ReplaceUrlFromJson(srcJson);
-
-  Map<String, dynamic> toJson() => _$ReplaceUrlToJson(this);
-
-}
-
-  

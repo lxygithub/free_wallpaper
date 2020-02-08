@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:free_wallpaper/constant.dart';
 import 'package:free_wallpaper/widget/bottom_navigation_bar.dart';
 
-import 'SplashPage.dart';
+import 'splash_page.dart';
 
 void main() {
   runApp(MyApp());
