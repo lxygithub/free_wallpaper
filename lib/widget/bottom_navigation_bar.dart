@@ -19,7 +19,6 @@ class BottomNavigationWidget extends StatefulWidget {
 
 class BottomNavigationWidgetState extends State<BottomNavigationWidget> with SingleTickerProviderStateMixin {
   List<Widget> pages = List<Widget>();
-  final _bottomNavigationColor = Colors.pink;
   int _currentIndex = 0;
 
   @override
@@ -34,48 +33,44 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> with Sin
     return Scaffold(
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        selectedFontSize: 16,
-        fixedColor: Colors.lightBlueAccent,
+        unselectedFontSize: 14,
         unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.lightBlueAccent,
         showUnselectedLabels: true,
+        selectedIconTheme: IconThemeData(color: Colors.lightBlueAccent, size: 24),
+        unselectedIconTheme: IconThemeData(color: Colors.grey, size: 24),
+        selectedLabelStyle: TextStyle(color: Colors.lightBlueAccent),
+        unselectedLabelStyle: TextStyle(color: Colors.grey),
         items: [
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.home,
-                color: _bottomNavigationColor,
               ),
               title: Container(
                 child: Text(
                   '首页',
-                  style: TextStyle(color: _bottomNavigationColor),
                 ),
               )),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.computer,
-                color: _bottomNavigationColor,
               ),
               title: Text(
                 'PC壁纸',
-                style: TextStyle(color: _bottomNavigationColor),
               )),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.phone_android,
-                color: _bottomNavigationColor,
               ),
               title: Text(
                 '手机壁纸',
-                style: TextStyle(color: _bottomNavigationColor),
               )),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.android,
-                color: _bottomNavigationColor,
               ),
               title: Text(
                 '我',
-                style: TextStyle(color: _bottomNavigationColor),
               )),
         ],
         currentIndex: _currentIndex,

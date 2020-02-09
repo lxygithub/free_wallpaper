@@ -34,7 +34,6 @@ dependencies:
   flutter_spinkit: ^4.1.1
   permission_handler: ^4.2.0+hotfix.2
   downloads_path_provider: ^0.1.0
-  wallpaper: ^0.0.8
   quiver: ^2.0.5
   package_info: ^0.4.0+13
   url_launcher: ^5.4.1

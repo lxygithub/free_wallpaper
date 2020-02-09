@@ -8,6 +8,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:free_wallpaper/model/album_model.dart';
 import 'package:free_wallpaper/model/category_model.dart';
 import 'package:free_wallpaper/net/address.dart';
@@ -75,23 +76,22 @@ class AlbumsPageState extends State<AlbumsPage> {
           centerTitle: true,
           title: Text(category.name),
         ),
-        body:  RefreshIndicator(
+        body: RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
-              margin: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-              child: GridView.count(
+              margin: EdgeInsets.all(5),
+              child: StaggeredGridView.countBuilder(
+                itemCount: albums.length,
+                itemBuilder: (BuildContext context, int index) => _buildItem(context, albums[index]),
+                staggeredTileBuilder: (int index) => StaggeredTile.count(1, mobile ? 1.5 : 0.6),
                 // Create a grid with 2 columns. If you change the scrollDirection to
                 // horizontal, this produces 2 rows.
                 crossAxisCount: 2,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8,
-                childAspectRatio: mobile ? 3 / 4 : 4 / 3,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
                 controller: _scrollController,
                 // Generate 100 widgets that display their index in the List.
-                children: List.generate(albums.length, (index) {
-                  return _buildItem(context, albums[index]);
-                }),
               ),
             ), onRefresh: _refreshData)
     );
@@ -166,12 +166,11 @@ class AlbumsPageState extends State<AlbumsPage> {
   }
 
   Widget _buildItem(BuildContext context, AlbumModel album) {
-    return  GestureDetector(
+    return GestureDetector(
       onTap: () => _onItemClick(album),
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(5)),
         child: Stack(
-          alignment: const Alignment(0, 1.0),
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: album.cover,
@@ -181,23 +180,28 @@ class AlbumsPageState extends State<AlbumsPage> {
               width: (MediaQuery
                   .of(context)
                   .size
-                  .width) / 2,
+                  .width),
+
             ),
-            Container( //分析 4
-              padding: EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width) / 2,
-              decoration:  BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Text(
-                album.name,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.black54,
+            Positioned(
+              left: 0,
+              bottom: 0,
+              right: 0,
+              child: Container( //分析 4
+                padding: EdgeInsets.all(3),
+                width: (MediaQuery
+                    .of(context)
+                    .size
+                    .width),
+                decoration: BoxDecoration(
+                  color: mobile?Colors.white:Colors.black26,
+                ),
+                child: Text(
+                  album.name,
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: mobile?Colors.black54:Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -210,7 +214,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   _onItemClick(AlbumModel album) {
     Navigator.push(
         context,
-         MaterialPageRoute(builder: (context) =>  AlbumDetailPage(album, mobile: mobile,))
+        MaterialPageRoute(builder: (context) => AlbumDetailPage(album, mobile: mobile,))
     );
   }
 }

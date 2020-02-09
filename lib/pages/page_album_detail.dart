@@ -23,12 +23,12 @@ import 'package:free_wallpaper/utils/app_utlis.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/utils/wallpaper.dart';
 import 'package:free_wallpaper/widget/bottom_dialog.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wallpaper/wallpaper.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
@@ -56,6 +56,7 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   bool mobile;
 
   BuildContext mContext;
+  var fillPath;
 
   AlbumDetailPageState(AlbumModel album, bool mobile) {
     this.album = album;
@@ -150,7 +151,7 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
     if (mobile) {
       fileName = "mobile_$fileName";
     }
-    var fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
+    fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
     var file = File(fillPath);
     if (!file.existsSync()) {
       file.createSync();
@@ -175,20 +176,20 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
 
   void _settingWallpaper(int type) {
     if (type == 0) {
-      Wallpaper.homeScreen(curImageUrl).then((value) {
+      Wallpaper.homeScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 1) {
-      Wallpaper.lockScreen(curImageUrl).then((value) {
+      Wallpaper.lockScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         LoadingDialog.dismiss(context);
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 2) {
-      Wallpaper.bothScreen(curImageUrl).then((value) {
+      Wallpaper.bothScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");

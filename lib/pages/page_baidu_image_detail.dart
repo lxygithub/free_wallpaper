@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:free_wallpaper/listener/dialog_listener.dart';
 import 'package:free_wallpaper/net/download_manager.dart';
 import 'package:free_wallpaper/net/http_callback.dart';
@@ -19,13 +20,14 @@ import 'package:free_wallpaper/utils/app_utlis.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
+import 'package:free_wallpaper/utils/wallpaper.dart';
 import 'package:free_wallpaper/widget/bottom_dialog.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/strings.dart';
-import 'package:wallpaper/wallpaper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constant.dart';
 
@@ -33,6 +35,7 @@ import '../constant.dart';
 class BaiduImageDetailPage extends StatefulWidget {
   String _image;
   String _title;
+
 
   BaiduImageDetailPage(this._image, this._title);
 
@@ -49,12 +52,16 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
   String _image;
   String _imageUrl;
   String _title;
-
-  bool _loadingError = false;
+  var fillPath;
 
   BuildContext mContext;
 
   String downloadPath;
+
+  String originalUrl;
+
+  static const platform = const MethodChannel('prateektimer.com.wallpaper/wallpaper');
+  String _setWallpaper = '';
 
   BaiduImageDetailPageState(this._image, this._title);
 
@@ -81,7 +88,7 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
         body: Builder(builder: (BuildContext context) {
           this.mContext = context;
           return Center(
-            child: isBlank(_imageUrl) ? Center(child: _loadingError ? ErrorPlaceHolder() : CircularProgressIndicator()) :
+            child: isBlank(_imageUrl) ? Center(child: CircularProgressIndicator()) :
             CachedNetworkImage(
               imageUrl: _imageUrl,
               placeholder: (context, url) => Center(child: CircularProgressIndicator()),
@@ -100,13 +107,13 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
         onSuccess: (ResultData data) {
           try {
             var body = parse(data.data).body;
-            _imageUrl = body
-                .querySelector("#currentImg")
+            var tempUrl = body
+                .querySelector(".currentImg")
                 .attributes["src"];
-            _loadingError = isBlank(_imageUrl);
+            _imageUrl = tempUrl.replaceFirst("quality=80", "quality=100");
+//            originalUrl = body.querySelector(".pic-title").getElementsByTagName("a").first.attributes["href"];
             setState(() {});
           } catch (e) {
-            setState(() {});
             ToastUtil.showToast(e.toString());
           }
         },
@@ -118,19 +125,19 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
 
   void _settingWallpaper(int type) {
     if (type == 0) {
-      Wallpaper.homeScreen(_imageUrl).then((value) {
+      Wallpaper.homeScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 1) {
-      Wallpaper.lockScreen(_imageUrl).then((value) {
+      Wallpaper.lockScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 2) {
-      Wallpaper.bothScreen(_imageUrl).then((value) {
+      Wallpaper.bothScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
@@ -151,17 +158,29 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
         value: 1,
         child: Text('设置为壁纸'),
       ),
+      PopupMenuDivider(height: 1,),
+      PopupMenuItem<int>(
+        height: 40,
+        value: 1,
+        child: Text('去原网页'),
+      ),
     ];
   }
 
   void _itemSelected(value) {
-    if (value == 0) {
-      _download();
-    } else {
-      BottomSheetDialog.showDialog(context,
-          function1: () => _settingWallpaper(0),
-          function2: () => _settingWallpaper(1),
-          function3: () => _settingWallpaper(2));
+    switch (value) {
+      case 0:
+        _download();
+        break;
+      case 1:
+        BottomSheetDialog.showDialog(context,
+            function1: () => _settingWallpaper(0),
+            function2: () => _settingWallpaper(1),
+            function3: () => _settingWallpaper(2));
+        break;
+      case 2:
+        launch(originalUrl);
+        break;
     }
   }
 
@@ -173,7 +192,7 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
 
   void _download() async {
     var fileName = AppUtils.getFileNameFormUrl(_imageUrl);
-    var fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
+    fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
     var file = File(fillPath);
     if (!file.existsSync()) {
       file.createSync();
@@ -194,6 +213,20 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
             PermissionUtil.openAppSetting();
           }));
     }
+  }
+
+  Future<Null> _setWallpaer(String imagePath) async {
+    String setWallpaper;
+    try {
+      final int result =
+      await platform.invokeMethod('setWallpaper', imagePath);
+      setWallpaper = 'Wallpaer Updated....';
+    } on PlatformException catch (e) {
+      setWallpaper = "Failed to Set Wallpaer: '${e.message}'.";
+    }
+    setState(() {
+      _setWallpaper = setWallpaper;
+    });
   }
 }
 

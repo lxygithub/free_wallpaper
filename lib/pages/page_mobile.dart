@@ -48,7 +48,7 @@ class MobilePageState extends State<MobilePage> {
                 crossAxisCount: 4,
                 itemCount: categories.length,
                 itemBuilder: (BuildContext context, int index) => _buildItem(context, categories[index]),
-                staggeredTileBuilder: (int index) => StaggeredTile.count(2, index.isEven ? 4 : 2),
+                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 3),
                 mainAxisSpacing: 8.0,
                 crossAxisSpacing: 8.0,
 
@@ -59,7 +59,6 @@ class MobilePageState extends State<MobilePage> {
 
   Widget _buildItem(BuildContext context, CategoryModel category) {
     var stack = Stack(
-      alignment: const Alignment(0.0, 1.0),
       children: <Widget>[
         Container(
           width: (MediaQuery
@@ -78,20 +77,25 @@ class MobilePageState extends State<MobilePage> {
           ),
           alignment: Alignment.topCenter,
         ),
-        Container( //分析 4
-          width: (MediaQuery
-              .of(context)
-              .size
-              .height) / 2,
-          decoration:  BoxDecoration(
-            color: Colors.black45,
-          ),
-          child: Text(
-            category.name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.white,
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container( //分析 4
+            padding: EdgeInsets.all(3),
+            width: (MediaQuery
+                .of(context)
+                .size
+                .height) / 2,
+            decoration:  BoxDecoration(
+              color: Colors.black45,
+            ),
+            child: Text(
+              category.name,
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

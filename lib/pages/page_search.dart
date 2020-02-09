@@ -63,12 +63,16 @@ class SearchPageState extends State<SearchPage> {
 
     (_fetchSearchHistory()).then((history) {
       _searchHistory.addAll(history);
+      setState(() {
+
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    print("");
     return Scaffold(
 //      endDrawer: HomeDrawer(),
         appBar: AppBar(
@@ -81,14 +85,14 @@ class SearchPageState extends State<SearchPage> {
               //设置四周边框
               border: new Border.all(width: 1, color: Colors.white),),
             child: TextField(
-              autofocus: true,
+              controller: isBlank(keyword) ? null : TextEditingController(text: keyword),
               textInputAction: TextInputAction.search,
               cursorColor: Colors.pinkAccent,
               style: TextStyle(color: Colors.white, fontSize: 16),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.only(bottom: 12),
-                hintText: "你想搜索什么？",
+                hintText: isBlank(keyword) ? "你想搜索什么？" : null,
                 hintStyle: TextStyle(color: Colors.white54),
                 fillColor: Colors.white70,
               ),
@@ -116,7 +120,10 @@ class SearchPageState extends State<SearchPage> {
             Container(
               margin: EdgeInsets.only(left: 5),
               child: Wrap(spacing: 5,
-                children: List.generate(_searchHistory.length, (index) => _buildTagItem(_searchHistory[index])),),
+                children: List.generate(_searchHistory.length, (index) {
+                  var history = _searchHistory[index];
+                  return _buildTagItem(history);
+                }),),
             ),
           ],
         )
@@ -129,8 +136,9 @@ class SearchPageState extends State<SearchPage> {
                 crossAxisCount: 2,
                 itemCount: baiduImages.length,
                 itemBuilder: (BuildContext context, int index) => _buildItem(context, baiduImages[index]),
-                staggeredTileBuilder: (int index) => StaggeredTile.count(1,
-                    baiduImages[index].width > baiduImages[index].height ? 1 : 1.5),
+                staggeredTileBuilder: (int index) =>
+                    StaggeredTile.count(1,
+                        baiduImages[index].width > baiduImages[index].height ? 1 : 1.5),
                 // Create a grid with 2 columns. If you change the scrollDirection to
                 // horizontal, this produces 2 rows.
                 crossAxisSpacing: 8.0,
@@ -281,6 +289,9 @@ class SearchPageState extends State<SearchPage> {
   _saveSearchHistory(String history) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var oldHistory = prefs.getStringList('history');
+    if (oldHistory == null) {
+      oldHistory = List<String>();
+    }
     if (oldHistory.contains(history)) {
       return;
     }

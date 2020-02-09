@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
+import 'package:free_wallpaper/utils/wallpaper.dart';
 import 'package:free_wallpaper/widget/bottom_dialog.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
-import 'package:wallpaper/wallpaper.dart';
 
 // ignore: must_be_immutable
 class LocalImagesPage extends StatefulWidget {
