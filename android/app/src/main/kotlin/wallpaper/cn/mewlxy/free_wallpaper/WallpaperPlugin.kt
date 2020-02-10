@@ -24,7 +24,7 @@ import java.io.IOException
 
 
 /** WallpaperPlugin  */
-class WallpaperPlugin : FlutterActivity(), FlutterPlugin, MethodCallHandler {
+class WallpaperPlugin constructor(var mContext: Context): FlutterActivity(), FlutterPlugin, MethodCallHandler {
     private var id = 0
     private var res = ""
     private var channel: MethodChannel?=null
@@ -33,7 +33,7 @@ class WallpaperPlugin : FlutterActivity(), FlutterPlugin, MethodCallHandler {
     @TargetApi(Build.VERSION_CODES.FROYO)
     private fun setWallpaper(i: Int, imagePath: String): String {
         id = i
-        val wallpaperManager = WallpaperManager.getInstance(activity)
+        val wallpaperManager = WallpaperManager.getInstance(mContext)
         val file = File(imagePath)
         // set bitmap to wallpaper
         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
@@ -123,8 +123,8 @@ class WallpaperPlugin : FlutterActivity(), FlutterPlugin, MethodCallHandler {
 
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(binding.binaryMessenger, "wallpaper.cn.mewlxy.free_wallpaper.WallpaperPlugin")
-        channel!!.setMethodCallHandler(WallpaperPlugin())
+        channel = MethodChannel(binding.binaryMessenger, "WallpaperPlugin")
+        channel!!.setMethodCallHandler(WallpaperPlugin(mContext))
 
     }
 

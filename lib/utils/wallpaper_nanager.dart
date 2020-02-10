@@ -7,9 +7,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-class Wallpaper {
+class WallpaperManager {
 
-  static const MethodChannel _channel = const MethodChannel('wallpaper.cn.mewlxy.free_wallpaper.WallpaperPlugin');
+  static const MethodChannel _channel = const MethodChannel('WallpaperPlugin');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');

@@ -23,7 +23,7 @@ import 'package:free_wallpaper/utils/app_utlis.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
-import 'package:free_wallpaper/utils/wallpaper.dart';
+import 'package:free_wallpaper/utils/wallpaper_nanager.dart';
 import 'package:free_wallpaper/widget/bottom_dialog.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
@@ -177,24 +177,24 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
 
   void _settingWallpaper(int type) {
     if (isBlank(fillPath)) {
-      ToastUtil.showToast("图片不存在，请先下载");
+      ToastUtil.showToast("请先下载壁纸");
       return;
     }
     if (type == 0) {
-      Wallpaper.homeScreen(fillPath).then((value) {
+      WallpaperManager.homeScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 1) {
-      Wallpaper.lockScreen(fillPath).then((value) {
+      WallpaperManager.lockScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         LoadingDialog.dismiss(context);
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 2) {
-      Wallpaper.bothScreen(fillPath).then((value) {
+      WallpaperManager.bothScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
