@@ -124,6 +124,10 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
   }
 
   void _settingWallpaper(int type) {
+    if (isBlank(fillPath)) {
+      ToastUtil.showToast("图片不存在，请先下载");
+      return;
+    }
     if (type == 0) {
       Wallpaper.homeScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");

@@ -12,40 +12,24 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.provider.MediaStore
 import io.flutter.Log
-import io.flutter.app.FlutterActivity
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.File
 import java.io.IOException
 
 
 /** WallpaperPlugin  */
-class WallpaperPlugin private constructor(var activity: FlutterActivity, private val channel: MethodChannel, private val mRegistrar: Registrar) : FlutterActivity(), MethodCallHandler {
+class WallpaperPlugin : FlutterActivity(), FlutterPlugin, MethodCallHandler {
     private var id = 0
     private var res = ""
-    override fun onCreate(savedInstanceState: Bundle) {
-        super.onCreate(savedInstanceState)
-        channel.setMethodCallHandler(this)
-    }
+    private var channel: MethodChannel?=null
 
-    private val activeContext: Context
-        get() = if (mRegistrar.activity() != null) mRegistrar.activity() else mRegistrar.context()
 
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        when (call.method) {
-            "getPlatformVersion" -> result.success("" + Build.VERSION.RELEASE)
-            "HomeScreen" -> result.success(setWallpaper(1, call.arguments as String))
-            "LockScreen" -> result.success(setWallpaper(2, call.arguments as String))
-            "Both" -> result.success(setWallpaper(3, call.arguments as String))
-            "SystemWallpaer" -> result.success(setWallpaper(4, call.arguments as String))
-            else -> result.notImplemented()
-        }
-    }
     @TargetApi(Build.VERSION_CODES.FROYO)
     private fun setWallpaper(i: Int, imagePath: String): String {
         id = i
@@ -92,12 +76,12 @@ class WallpaperPlugin private constructor(var activity: FlutterActivity, private
                             Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
                 } else {
                     Uri.fromFile(file)
-                    val contentURI = getImageContentUri(activeContext, file)
+                    val contentURI = getImageContentUri(this, file)
                     val intent = Intent(wallpaperManager.getCropAndSetWallpaperIntent(contentURI))
                     val mime = "image/*"
                     intent.setDataAndType(contentURI, mime)
                     try {
-                        mRegistrar.activity().startActivityForResult(intent, 2)
+                        startActivityForResult(intent, 2)
                     } catch (e: ActivityNotFoundException) { //handle error
                         res = "Error To Set Wallpaer"
                     }
@@ -109,26 +93,47 @@ class WallpaperPlugin private constructor(var activity: FlutterActivity, private
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         Log.d("Tag", "resultcode=" + resultCode + "requestcode=" + requestCode)
-        res = if (resultCode == Activity.RESULT_OK) {
-            "System Screen Set Successfully"
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            "setting Wallpaper Cancelled"
-        } else {
-            "Something Went Wrong"
+        res = when (resultCode) {
+            Activity.RESULT_OK -> {
+                "System Screen Set Successfully"
+            }
+            Activity.RESULT_CANCELED -> {
+                "setting Wallpaper Cancelled"
+            }
+            else -> {
+                "Something Went Wrong"
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    companion object {
-        const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123
-        /**
-         * HomeScreen
-         * Plugin registration.
-         */
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "wallpaper")
-            channel.setMethodCallHandler(WallpaperPlugin(registrar.activity() as FlutterActivity, channel, registrar))
+
+
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "getPlatformVersion" -> result.success("" + Build.VERSION.RELEASE)
+            "HomeScreen" -> result.success(setWallpaper(1, call.arguments as String))
+            "LockScreen" -> result.success(setWallpaper(2, call.arguments as String))
+            "Both" -> result.success(setWallpaper(3, call.arguments as String))
+            "SystemWallpaer" -> result.success(setWallpaper(4, call.arguments as String))
+            else -> result.notImplemented()
         }
+    }
+
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(binding.binaryMessenger, "wallpaper.cn.mewlxy.free_wallpaper.WallpaperPlugin")
+        channel!!.setMethodCallHandler(WallpaperPlugin())
+
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel!!.setMethodCallHandler(null)
+        channel=null
+    }
+
+    companion object {
 
         fun getImageContentUri(context: Context, imageFile: File): Uri? {
             val filePath = imageFile.absolutePath

@@ -29,6 +29,7 @@ import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:quiver/strings.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
@@ -175,6 +176,10 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   }
 
   void _settingWallpaper(int type) {
+    if (isBlank(fillPath)) {
+      ToastUtil.showToast("图片不存在，请先下载");
+      return;
+    }
     if (type == 0) {
       Wallpaper.homeScreen(fillPath).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");

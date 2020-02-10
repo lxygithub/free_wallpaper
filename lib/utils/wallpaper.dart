@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 
 class Wallpaper {
 
-  static const MethodChannel _channel = const MethodChannel('wallpaper');
+  static const MethodChannel _channel = const MethodChannel('wallpaper.cn.mewlxy.free_wallpaper.WallpaperPlugin');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -17,8 +17,7 @@ class Wallpaper {
   }
 
   static Future<String> homeScreen(String imagePath) async {
-    final String resultvar =
-    await _channel.invokeMethod('HomeScreen', imagePath);
+    final String resultvar = await _channel.invokeMethod('HomeScreen', imagePath);
     return resultvar;
   }
 
