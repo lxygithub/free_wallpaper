@@ -1,8 +1,17 @@
 # free_wallpaper
 
-A free wallpaper Flutter application.
+一款基于flutter的免费Android壁纸应用
 
-## Getting Started
+## 项目明细
+环境：
+android studio 3.5
+Flutter 1.12.13+hotfix.7 • channel stable 
+Framework • revision 9f5ff2306b 
+Engine • revision a67792536c
+Tools • Dart 2.7.0
+
+## 预览
+
 
 This project is a starting point for a Flutter application.
 
