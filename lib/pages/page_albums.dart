@@ -15,6 +15,8 @@ import 'package:free_wallpaper/net/address.dart';
 import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
+import 'package:free_wallpaper/pages/empty_page.dart';
+import 'package:free_wallpaper/pages/error_page.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/utils/toast.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
@@ -43,6 +45,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   List<AlbumModel> albums = List();
   CategoryModel category;
   ScrollController _scrollController = ScrollController();
+  bool _empty = false;
 
   AlbumsPageState(CategoryModel category, bool mobile) {
     this.category = category;
@@ -76,7 +79,7 @@ class AlbumsPageState extends State<AlbumsPage> {
           centerTitle: true,
           title: Text(category.name),
         ),
-        body: RefreshIndicator(
+        body: _empty ? EmptyPage() : RefreshIndicator(
             color: Colors.pinkAccent,
             backgroundColor: Colors.white,
             child: Container(
@@ -147,6 +150,7 @@ class AlbumsPageState extends State<AlbumsPage> {
             albums.add(AlbumModel(name: title, href: href, cover: cover));
           });
           setState(() {
+            _empty = false;
             this.curPage = curr + 1;
             totalPage = max(curr, num);
           });
@@ -156,6 +160,9 @@ class AlbumsPageState extends State<AlbumsPage> {
             LoadingDialog.dismiss(context);
           }
           ToastUtil.showToast(error.data);
+          setState(() {
+            _empty = true;
+          });
         }
     ));
   }
@@ -194,13 +201,13 @@ class AlbumsPageState extends State<AlbumsPage> {
                     .size
                     .width),
                 decoration: BoxDecoration(
-                  color: mobile?Colors.white:Colors.black26,
+                  color: mobile ? Colors.white : Colors.black26,
                 ),
                 child: Text(
                   album.name,
                   style: TextStyle(
                     fontSize: 14.0,
-                    color: mobile?Colors.black54:Colors.white,
+                    color: mobile ? Colors.black54 : Colors.white,
                   ),
                 ),
               ),

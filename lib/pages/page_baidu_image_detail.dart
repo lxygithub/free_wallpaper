@@ -10,12 +10,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:free_wallpaper/listener/dialog_listener.dart';
 import 'package:free_wallpaper/net/download_manager.dart';
 import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
+import 'package:free_wallpaper/pages/empty_page.dart';
 import 'package:free_wallpaper/utils/app_utlis.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
@@ -60,8 +60,7 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
 
   String originalUrl;
 
-  static const platform = const MethodChannel('prateektimer.com.wallpaper/wallpaper');
-  String _setWallpaper = '';
+  bool _empty = false;
 
   BaiduImageDetailPageState(this._image, this._title);
 
@@ -69,7 +68,6 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getDownloadPath();
     _requestData();
   }
 
@@ -85,7 +83,7 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
               icon: Icon(Icons.more_horiz, color: Colors.white,), onSelected: _itemSelected,),
           )
         ],),
-        body: Builder(builder: (BuildContext context) {
+        body: _empty ? EmptyPage() : Builder(builder: (BuildContext context) {
           this.mContext = context;
           return Center(
             child: isBlank(_imageUrl) ? Center(child: CircularProgressIndicator()) :
@@ -107,41 +105,49 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
         onSuccess: (ResultData data) {
           try {
             var body = parse(data.data).body;
-            var tempUrl = body
-                .querySelector(".currentImg")
-                .attributes["src"];
+            var imageTag = body.querySelector(".currentImg") == null
+                ? body
+                .querySelector(".img-wrapper")
+                .getElementsByTagName("img")
+                .first
+                : body.querySelector(".currentImg");
+            var tempUrl = imageTag.attributes["src"];
             _imageUrl = tempUrl.replaceFirst("quality=80", "quality=100");
 //            originalUrl = body.querySelector(".pic-title").getElementsByTagName("a").first.attributes["href"];
-            setState(() {});
+            setState(() {
+              _empty = isBlank(_imageUrl);
+            });
           } catch (e) {
+            setState(() {
+              _empty = true;
+            });
             ToastUtil.showToast(e.toString());
           }
         },
         onError: (ResultData error) {
+          setState(() {
+            _empty = true;
+          });
           ToastUtil.showToast(error.data);
         }
     ));
   }
 
   void _settingWallpaper(int type) {
-    if (isBlank(fillPath)) {
-      ToastUtil.showToast("请先下载壁纸");
-      return;
-    }
     if (type == 0) {
-      WallpaperManager.homeScreen(fillPath).then((value) {
+      WallpaperManager.homeScreen(_imageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 1) {
-      WallpaperManager.lockScreen(fillPath).then((value) {
+      WallpaperManager.lockScreen(_imageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 2) {
-      WallpaperManager.bothScreen(fillPath).then((value) {
+      WallpaperManager.bothScreen(_imageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
@@ -162,12 +168,12 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
         value: 1,
         child: Text('设置为壁纸'),
       ),
-      PopupMenuDivider(height: 1,),
-      PopupMenuItem<int>(
-        height: 40,
-        value: 1,
-        child: Text('去原网页'),
-      ),
+//      PopupMenuDivider(height: 1,),
+//      PopupMenuItem<int>(
+//        height: 40,
+//        value: 1,
+//        child: Text('去原网页'),
+//      ),
     ];
   }
 
@@ -191,19 +197,23 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
   _getDownloadPath() async {
     DownloadsPathProvider.downloadsDirectory.then((value) {
       downloadPath = "${value.path}${Platform.pathSeparator}";
+      var fileName = "${DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString()}.jpg";
+      fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
     });
   }
 
   void _download() async {
-    var fileName = AppUtils.getFileNameFormUrl(_imageUrl);
-    fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
-    var file = File(fillPath);
-    if (!file.existsSync()) {
-      file.createSync();
-    }
+    await _getDownloadPath();
     PermissionStatus permissionStatus = await PermissionUtil.checkingPermission(PermissionGroup.storage);
     if (permissionStatus.value == PermissionStatus.granted.value) {
       LoadingDialog.showProgress(context);
+      var file = File(fillPath);
+      if (!file.existsSync()) {
+        file.createSync();
+      }
       await DownloadManager.getInstance().download(_imageUrl, fillPath, (int count, int total) {
 
       });
@@ -219,18 +229,5 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
     }
   }
 
-  Future<Null> _setWallpaer(String imagePath) async {
-    String setWallpaper;
-    try {
-      final int result =
-      await platform.invokeMethod('setWallpaper', imagePath);
-      setWallpaper = 'Wallpaer Updated....';
-    } on PlatformException catch (e) {
-      setWallpaper = "Failed to Set Wallpaer: '${e.message}'.";
-    }
-    setState(() {
-      _setWallpaper = setWallpaper;
-    });
-  }
 }
 

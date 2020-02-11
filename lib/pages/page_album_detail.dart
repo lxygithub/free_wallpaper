@@ -29,7 +29,6 @@ import 'package:free_wallpaper/widget/error_placeholder.dart';
 import 'package:free_wallpaper/widget/loading_dialog.dart';
 import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:quiver/strings.dart';
 
 // ignore: must_be_immutable
 class AlbumDetailPage extends StatefulWidget {
@@ -64,14 +63,13 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
     this.mobile = mobile;
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getDownloadPath();
     _requestAlbum();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,11 +146,7 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
 
 
   void _download() async {
-    var fileName = AppUtils.getFileNameFormUrl(curImageUrl);
-    if (mobile) {
-      fileName = "mobile_$fileName";
-    }
-    fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
+    await _getDownloadPath();
     var file = File(fillPath);
     if (!file.existsSync()) {
       file.createSync();
@@ -176,25 +170,21 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   }
 
   void _settingWallpaper(int type) {
-    if (isBlank(fillPath)) {
-      ToastUtil.showToast("请先下载壁纸");
-      return;
-    }
     if (type == 0) {
-      WallpaperManager.homeScreen(fillPath).then((value) {
+      WallpaperManager.homeScreen(curImageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 1) {
-      WallpaperManager.lockScreen(fillPath).then((value) {
+      WallpaperManager.lockScreen(curImageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         LoadingDialog.dismiss(context);
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
       });
     } else if (type == 2) {
-      WallpaperManager.bothScreen(fillPath).then((value) {
+      WallpaperManager.bothScreen(curImageUrl).then((value) {
         SnackBarUtil.showSnake(mContext, "设置成功");
       }, onError: (error) {
         SnackBarUtil.showSnake(mContext, "设置失败，${error.toString()}");
@@ -232,6 +222,11 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   _getDownloadPath() async {
     DownloadsPathProvider.downloadsDirectory.then((value) {
       downloadPath = "${value.path}${Platform.pathSeparator}";
+      var fileName = AppUtils.getFileNameFormUrl(curImageUrl);
+      if (mobile) {
+        fileName = "mobile_$fileName";
+      }
+      fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
     });
   }
 }

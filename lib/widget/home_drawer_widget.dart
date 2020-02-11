@@ -38,7 +38,7 @@ class HomeDrawerState extends State<HomeDrawer> {
   String _style = "0";
   String _size = "0";
   String _color = "0";
-  String curHref = Constant.HOST+"mobile_0_0_0_1.html";
+  String curHref = Constant.HOST + "mobile_0_0_0_1.html";
 
   @override
   void initState() {
@@ -101,7 +101,7 @@ class HomeDrawerState extends State<HomeDrawer> {
             children: <Widget>[
               Container(margin: EdgeInsets.only(right: 20), child: Text(_listItems[index].name), alignment: Alignment.topLeft,),
               StaggeredGridView.countBuilder(
-                crossAxisCount: _device == "mobile" ? 5 : 4,
+                crossAxisCount: 4,
                 itemCount: _styles.length,
                 itemBuilder: (BuildContext context, int index) => _buildStyleItem(_styles[index]),
                 staggeredTileBuilder: (int index) => StaggeredTile.count(1, 0.6),
@@ -131,7 +131,7 @@ class HomeDrawerState extends State<HomeDrawer> {
                 Expanded(flex: 1, child: MaterialButton(color: Colors.pinkAccent, child: Text("确定", style: TextStyle(color: Colors.white),), onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: "筛选结果", href: curHref), true)),
+                    MaterialPageRoute(builder: (context) => AlbumsPage(CategoryModel(name: "筛选结果", href: curHref), _device == "mobile")),
                   );
                 },)),
               ],)
@@ -164,9 +164,9 @@ class HomeDrawerState extends State<HomeDrawer> {
         switch (category.tagType) {
           case 0:
             _device = category.type;
-            if (category.name=="手机") {
+            if (category.name == "手机") {
               _getMobileCategoryData();
-            }else{
+            } else {
               _getPCCategoryData();
             }
             break;
