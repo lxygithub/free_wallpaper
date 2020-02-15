@@ -9,17 +9,6 @@ import 'splash_page.dart';
 
 void main() {
   runApp(MyApp());
-  _getDownloadPath();
-}
-
-_getDownloadPath() async {
-  DownloadsPathProvider.downloadsDirectory.then((value) {
-    var dirPath = "${value.path}${Platform.pathSeparator}${Constant.APP_DOWNLOAD_DIRECTORY}";
-    var folder = Directory(dirPath);
-    if (!folder.existsSync()) {
-      folder.create();
-    }
-  });
 }
 
 class MyApp extends StatelessWidget {

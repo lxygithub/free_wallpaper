@@ -146,14 +146,23 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
 
 
   void _download() async {
-    await _getDownloadPath();
-    var file = File(fillPath);
-    if (!file.existsSync()) {
-      file.createSync();
-    }
     PermissionStatus permissionStatus = await PermissionUtil.checkingPermission(PermissionGroup.storage);
     if (permissionStatus.value == PermissionStatus.granted.value) {
       LoadingDialog.showProgress(context);
+      var downloadPath = await AppUtils.getDownloadPath();
+      var fileName = AppUtils.getFileNameFormUrl(curImageUrl);
+      if (mobile) {
+        fileName = "mobile_$fileName";
+      }
+      fillPath = "$downloadPath$fileName";
+      var dirFile = Directory(downloadPath);
+      if (!dirFile.existsSync()) {
+        dirFile.createSync();
+      }
+      var file = File(fillPath);
+      if (!file.existsSync()) {
+        file.createSync();
+      }
       await DownloadManager.getInstance().download(curImageUrl, fillPath, (int count, int total) {
 
       });
@@ -219,14 +228,4 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
     }
   }
 
-  _getDownloadPath() async {
-    DownloadsPathProvider.downloadsDirectory.then((value) {
-      downloadPath = "${value.path}${Platform.pathSeparator}";
-      var fileName = AppUtils.getFileNameFormUrl(curImageUrl);
-      if (mobile) {
-        fileName = "mobile_$fileName";
-      }
-      fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
-    });
-  }
 }

@@ -5,6 +5,12 @@
 */
 
 
+import 'dart:io';
+
+import 'package:downloads_path_provider/downloads_path_provider.dart';
+
+import '../constant.dart';
+
 class AppUtils {
   static getFileNameFormUrl(String url) {
     return url
@@ -12,4 +18,8 @@ class AppUtils {
         .last;
   }
 
+  static getDownloadPath() async {
+    var downloadPath = (await DownloadsPathProvider.downloadsDirectory).path;
+    return "$downloadPath${Platform.pathSeparator}${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}";
+  }
 }

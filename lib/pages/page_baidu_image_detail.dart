@@ -194,22 +194,21 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
     }
   }
 
-  _getDownloadPath() async {
-    DownloadsPathProvider.downloadsDirectory.then((value) {
-      downloadPath = "${value.path}${Platform.pathSeparator}";
+
+  void _download() async {
+    PermissionStatus permissionStatus = await PermissionUtil.checkingPermission(PermissionGroup.storage);
+    if (permissionStatus.value == PermissionStatus.granted.value) {
+      LoadingDialog.showProgress(context);
+      downloadPath = await AppUtils.getDownloadPath();
       var fileName = "${DateTime
           .now()
           .millisecondsSinceEpoch
           .toString()}.jpg";
-      fillPath = "$downloadPath${Constant.APP_DOWNLOAD_DIRECTORY}${Platform.pathSeparator}$fileName";
-    });
-  }
-
-  void _download() async {
-    await _getDownloadPath();
-    PermissionStatus permissionStatus = await PermissionUtil.checkingPermission(PermissionGroup.storage);
-    if (permissionStatus.value == PermissionStatus.granted.value) {
-      LoadingDialog.showProgress(context);
+      fillPath = "$downloadPath$fileName";
+      var fileDir = Directory(downloadPath);
+      if (!fileDir.existsSync()) {
+        fileDir.createSync();
+      }
       var file = File(fillPath);
       if (!file.existsSync()) {
         file.createSync();
