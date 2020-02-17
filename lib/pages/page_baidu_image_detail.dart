@@ -17,6 +17,7 @@ import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/empty_page.dart';
 import 'package:free_wallpaper/utils/app_utlis.dart';
+import 'package:free_wallpaper/utils/media_store.dart';
 import 'package:free_wallpaper/utils/permission_util.dart';
 import 'package:free_wallpaper/utils/snack_bar.dart';
 import 'package:free_wallpaper/utils/toast.dart';
@@ -218,6 +219,7 @@ class BaiduImageDetailPageState extends State<BaiduImageDetailPage> {
       });
       LoadingDialog.dismiss(context);
       SnackBarUtil.showSnake(mContext, "成功下载到：$fillPath");
+      MediaStoreManager.refreshMedia(fillPath);
     } else if (permissionStatus.value == PermissionStatus.denied.value) {
       await PermissionUtil.requestPermissions([PermissionGroup.storage]);
     } else {

@@ -11,6 +11,8 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         flutterEngine.plugins.add(WallpaperPlugin(applicationContext))
+        flutterEngine.plugins.add(MediaStorePlugin(applicationContext))
+        flutterEngine.plugins.add(SetWallpaperPlugin(this))
         GeneratedPluginRegistrant.registerWith(flutterEngine)
     }
 

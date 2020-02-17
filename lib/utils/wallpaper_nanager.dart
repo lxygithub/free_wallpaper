@@ -65,10 +65,14 @@ class WallpaperManager {
     String dir = (await getApplicationDocumentsDirectory()).path;
     _filePath = "$dir${Platform.pathSeparator}${AppUtils.getFileNameFormUrl(url)}";
     await DownloadManager.getInstance().download(url, _filePath, (int count, int total) {
-      if (count==total) {
+      if (count == total) {
 
       }
     });
+  }
+
+  static Future<String> gotoSystemWallpaperManager(String filePath) async {
+    return await MethodChannel('SetWallpaperPlugin').invokeMethod('goToSystemWallPaperManager',filePath);
   }
 
 }
