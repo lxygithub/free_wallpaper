@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  List<AlbumModel> albums = List();
+  List<AlbumModel> albums = [];
 
   @override
   void initState() {
@@ -209,7 +209,7 @@ class HomePageState extends State<HomePage> {
               var name = tag.attributes["title"];
               var cover = tag
                   .querySelector("img")
-                  .attributes["data-original"];
+                  .attributes["data-src"];
               albums.add(AlbumModel(name: name, href: href, cover: cover));
             }
           });

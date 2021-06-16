@@ -29,11 +29,11 @@ class HomeDrawer extends StatefulWidget {
 
 class HomeDrawerState extends State<HomeDrawer> {
 
-  List<CategoryModel> _listItems = List();
-  List<CategoryModel> _deviceStyles = List();
-  List<CategoryModel> _styles = List();
-  List<CategoryModel> _sizeStyles = List();
-  List<CategoryModel> _colorStyles = List();
+  List<CategoryModel> _listItems = [];
+  List<CategoryModel> _deviceStyles = [];
+  List<CategoryModel> _styles = [];
+  List<CategoryModel> _sizeStyles = [];
+  List<CategoryModel> _colorStyles = [];
   String _device = "mobile";
   String _style = "0";
   String _size = "0";

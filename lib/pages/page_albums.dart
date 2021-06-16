@@ -16,7 +16,6 @@ import 'package:free_wallpaper/net/http_callback.dart';
 import 'package:free_wallpaper/net/http_manager.dart';
 import 'package:free_wallpaper/net/result_data.dart';
 import 'package:free_wallpaper/pages/empty_page.dart';
-import 'package:free_wallpaper/pages/error_page.dart';
 import 'package:free_wallpaper/pages/page_album_detail.dart';
 import 'package:free_wallpaper/utils/toast.dart';
 import 'package:free_wallpaper/widget/error_placeholder.dart';
@@ -42,7 +41,7 @@ class AlbumsPageState extends State<AlbumsPage> {
   bool mobile;
   int curPage = 1;
   int totalPage = 1;
-  List<AlbumModel> albums = List();
+  List<AlbumModel> albums = [];
   CategoryModel category;
   ScrollController _scrollController = ScrollController();
   bool _empty = false;
@@ -146,7 +145,7 @@ class AlbumsPageState extends State<AlbumsPage> {
             var cover = a
                 .getElementsByTagName("img")
                 .first
-                .attributes["data-original"];
+                .attributes["data-src"];
             albums.add(AlbumModel(name: title, href: href, cover: cover));
           });
           setState(() {

@@ -23,7 +23,7 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class CategoriesPageState extends State<CategoriesPage> {
-  var categories = List<CategoryModel>();
+  var categories = [];
 
   @override
   void initState() {

@@ -23,7 +23,7 @@ class MobilePage extends StatefulWidget {
 }
 
 class MobilePageState extends State<MobilePage> {
-  List<CategoryModel> categories = List();
+  List<CategoryModel> categories = [];
 
   @override
   void initState() {

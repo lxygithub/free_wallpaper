@@ -18,7 +18,7 @@ class BottomNavigationWidget extends StatefulWidget {
 
 
 class BottomNavigationWidgetState extends State<BottomNavigationWidget> with SingleTickerProviderStateMixin {
-  List<Widget> pages = List<Widget>();
+  List<Widget> pages = [];
   int _currentIndex = 0;
 
   @override

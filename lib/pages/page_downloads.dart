@@ -21,7 +21,7 @@ class DownloadsPage extends StatefulWidget {
 }
 
 class DownloadsPageState extends State<DownloadsPage> {
-  List<String> images = List();
+  List<String> images = [];
 
   @override
   void initState() {

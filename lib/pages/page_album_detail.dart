@@ -7,12 +7,10 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:free_wallpaper/constant.dart';
 import 'package:free_wallpaper/listener/dialog_listener.dart';
 import 'package:free_wallpaper/model/album_model.dart';
 import 'package:free_wallpaper/net/download_manager.dart';
@@ -52,7 +50,7 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
   String curImageUrl;
   String downloadPath;
   AlbumModel album;
-  List<String> picUrls = List();
+  List<String> picUrls = [];
 
   bool mobile;
 
@@ -131,7 +129,7 @@ class AlbumDetailPageState extends State<AlbumDetailPage> {
           var imgTags = doc.querySelector("#scroll").getElementsByTagName("img");
 
           imgTags.forEach((img) {
-            var originalUrl = img.attributes["data-original"].replaceFirst("_120_80", "").replaceFirst("_130_170", "");
+            var originalUrl = img.attributes["data-src"].replaceFirst("_120_80", "").replaceFirst("_130_170", "");
             picUrls.add(originalUrl);
             curImageUrl = picUrls[0];
           });

@@ -33,7 +33,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
 
-  List<Data> baiduImages = List();
+  List<Data> baiduImages = [];
   ScrollController _scrollController = ScrollController();
 
   String width = "";
@@ -42,7 +42,7 @@ class SearchPageState extends State<SearchPage> {
   int pageSize = 30;
   String keyword;
 
-  List<String> _searchHistory = List();
+  List<String> _searchHistory = [];
 
   @override
   void dispose() {
@@ -290,7 +290,7 @@ class SearchPageState extends State<SearchPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var oldHistory = prefs.getStringList('history');
     if (oldHistory == null) {
-      oldHistory = List<String>();
+      oldHistory = [];
     }
     if (oldHistory.contains(history)) {
       return;

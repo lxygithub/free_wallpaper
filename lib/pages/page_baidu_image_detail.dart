@@ -7,7 +7,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:free_wallpaper/listener/dialog_listener.dart';
@@ -29,8 +28,6 @@ import 'package:html/parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../constant.dart';
 
 // ignore: must_be_immutable
 class BaiduImageDetailPage extends StatefulWidget {
