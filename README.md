@@ -53,7 +53,7 @@ Tools • Dart 2.7.0
 
 ## 下载体验
 
-![FreeWallpaper](apk/app-release.apk)
+![FreeWallpaper](apk/app-debug.apk)
 
 ## 声明
 
